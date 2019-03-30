@@ -1,4 +1,5 @@
 #include "Label.h"
+#include "../../AW101Layout.h"
 
 void Label::computeNode() {
     clear();
@@ -17,4 +18,7 @@ const std::string& Label::getText() const {
 
 
 Label::Label(AW101Layout* parent, const std::string &text) : Control{parent}, m_text{text} {
+    registerCallback([this](auto* label) {
+        m_parent->getCallbackManager()->updateNode(label);
+    });
 }

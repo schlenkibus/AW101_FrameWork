@@ -16,3 +16,7 @@ void LayoutCallbackManager::onClickReceived(const UIID &id) {
         }
     }
 }
+
+void LayoutCallbackManager::updateNode(Control *control) {
+    m_clickServer.updateNode(control);
+}
