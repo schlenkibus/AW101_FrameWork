@@ -1,7 +1,8 @@
 #include "Label.h"
 
 void Label::computeNode() {
-    m_node.SetName("p.Label#"+m_id.id);
+    clear();
+    m_node.SetName("div.Label#"+m_id.id);
     m_node.AppendText(m_text);
 }
 

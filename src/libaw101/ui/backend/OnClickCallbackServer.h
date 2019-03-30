@@ -8,16 +8,18 @@
 
 class LayoutCallbackManager;
 
-struct ClickHandler : seasocks::WebSocket::Handler {
+class ClickHandler : public seasocks::WebSocket::Handler {
+public:
+    ClickHandler(LayoutCallbackManager* manager) {
+        m_manager = manager;
+    }
+    LayoutCallbackManager* m_manager;
     std::set<seasocks::WebSocket *> connections;
     void onConnect(seasocks::WebSocket *socket) override
     {
         connections.insert(socket);
     }
-    void onData(seasocks::WebSocket *, const char *data) override
-    {
-        for (auto c : connections) c->send(data);
-    }
+    void onData(seasocks::WebSocket *, const char *data) override;
     void onDisconnect(seasocks::WebSocket *socket) override
     {
         connections.erase(socket);

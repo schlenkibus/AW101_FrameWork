@@ -1,5 +1,5 @@
 #include "Container.h"
-#include <string>
+#include "Control.h"
 
 Container::Container(AW101Layout *parent) : Control(parent) {
     computeNode();
@@ -10,8 +10,12 @@ const std::vector<std::unique_ptr<Control>> &Container::getChildren() const {
 }
 
 void Container::computeNode() {
+    clear();
     m_node.SetName("div.container#"+m_id.id);
     for(auto& child: m_children)
+    {
+        child->computeNode();
         m_node.AppendChild(child->getNode());
+    }
 }
 

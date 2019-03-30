@@ -1,3 +1,4 @@
+#include "Container.h"
 #include "Control.h"
 
 Control::Control(AW101Layout *parent) : m_parent{parent} {
@@ -12,4 +13,8 @@ const UIID &Control::getID() const {
 
 const CTML::Node &Control::getNode() const {
     return m_node;
+}
+
+void Control::clear() {
+    m_node = CTML::Node{};
 }

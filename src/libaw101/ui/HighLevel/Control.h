@@ -15,6 +15,8 @@ protected:
     UIID m_id;
     AW101Layout* m_parent;
     CTML::Node m_node;
+
+    void clear();
 };
 
 

@@ -7,7 +7,7 @@ class LayoutCallbackManager {
 public:
     LayoutCallbackManager();
     void addButtonCallback(Button* button);
-    void onClickReceived(UIID id);
+    void onClickReceived(const UIID &id);
 protected:
     std::vector<Button*> m_buttons;
     OnClickCallbackServer m_clickServer;
