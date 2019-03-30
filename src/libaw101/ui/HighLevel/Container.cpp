@@ -5,7 +5,7 @@ Container::Container(AW101Layout *parent) : Control(parent) {
     computeNode();
 };
 
-const std::vector<std::unique_ptr<Control>> &Container::getChildren() const {
+std::vector<std::unique_ptr<Control>> & Container::getChildren() {
     return m_children;
 }
 

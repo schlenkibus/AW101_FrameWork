@@ -3,8 +3,12 @@
 
 class TestModel {
 public:
-    int foo = 0;
-    std::string str = "nibba";
+    TestModel() {
+        foo = 0;
+        str = "nibba";
+    }
+    int foo;
+    std::string str;
 };
 
 

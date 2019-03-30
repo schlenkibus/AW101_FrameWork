@@ -12,9 +12,13 @@ public:
 
     void addChild(std::unique_ptr<Control>&& ptr) {
         m_children.emplace_back(std::move(ptr));
+        auto& ctrl = *m_children.back();
+        ctrl.registerCallback([](auto c){
+            c->computeNode();
+        });
         computeNode();
     }
-    const std::vector<std::unique_ptr<Control>>& getChildren() const;
+    std::vector<std::unique_ptr<Control>> & getChildren();
 protected:
     std::vector<std::unique_ptr<Control>> m_children;
 };

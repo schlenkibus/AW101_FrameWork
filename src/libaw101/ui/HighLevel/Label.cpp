@@ -11,5 +11,10 @@ void Label::setText(const std::string& text) {
     onChange();
 }
 
+const std::string& Label::getText() const {
+    return m_text;
+}
+
+
 Label::Label(AW101Layout* parent, const std::string &text) : Control{parent}, m_text{text} {
 }

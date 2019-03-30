@@ -8,6 +8,7 @@ class AW101Layout;
 class Control : public Trackable<Control> {
 public:
     explicit Control(AW101Layout* parent);
+    virtual ~Control() = default;
     virtual void computeNode() = 0;
     const CTML::Node & getNode() const;
     const UIID& getID() const;
