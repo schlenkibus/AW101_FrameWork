@@ -1,18 +1,19 @@
 #include "LayoutServer.h"
+#include "LayoutHandler.h"
 
-LayoutServer::LayoutServer(short port) : m_server{port, this} {
+LayoutServer::LayoutServer(short port) : super(port, this), m_quit{false}
+{
 }
 
-void LayoutServer::addLayout(AW101Layout &&layout, std::string path) {
-    m_layouts[path] = std::make_unique<AW101Layout>(layout);
+bool LayoutServer::isQuit() const {
+    return m_quit;
 }
 
-LayoutServer::LayoutHandler::LayoutHandler(LayoutServer *parent) : m_server{parent} {
-
+void LayoutServer::quit() {
+    m_quit = true;
 }
 
-std::shared_ptr<seasocks::Response> LayoutServer::LayoutHandler::handle(const seasocks::Request &request) {
-    std::cout << request.getRequestUri() << std::endl;
-    std::cout << m_server->m_layouts.size() << std::endl;
-    return std::shared_ptr<seasocks::Response>();
+
+void LayoutServer::loop() {
+    std::this_thread::sleep_for(std::chrono::milliseconds(50));
 }

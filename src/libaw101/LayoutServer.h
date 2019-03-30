@@ -1,24 +1,28 @@
 #pragma once
+
+#include <thread>
 #include "AW101Layout.h"
 #include "../server/HttpServer.h"
-#include <seasocks/PageHandler.h>
+#include "LayoutHandler.h"
 
-class LayoutServer {
-protected:
-    class LayoutHandler : public seasocks::PageHandler {
-    public:
-        LayoutHandler(LayoutServer* parent);
-        std::shared_ptr<seasocks::Response> handle(const seasocks::Request &request) override;
-
-    private:
-        LayoutServer* m_server;
-    };
+class LayoutServer : HttpServer<LayoutHandler, LayoutServer*> {
 public:
-    LayoutServer(short port);
-    void addLayout(AW101Layout &&layout, std::string path);
+    typedef HttpServer<LayoutHandler, LayoutServer*> super;
+    explicit LayoutServer(short port);
+    template<class T>
+    void addLayout(std::unique_ptr<T>& layout, const std::string& path);
+    bool isQuit() const;
+    void quit();
+    void loop();
 protected:
+    bool m_quit;
     std::unordered_map<std::string, std::unique_ptr<AW101Layout>> m_layouts;
-    HttpServer<LayoutHandler, LayoutServer*> m_server;
+    friend class LayoutHandler;
 };
 
+
+template<class T>
+void LayoutServer::addLayout(std::unique_ptr<T>& layout, const std::string &path) {
+    m_layouts[path] = std::move(layout);
+}
 

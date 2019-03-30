@@ -4,14 +4,15 @@
 
 Button::Button(AW101Layout* parent, Button::tButtonCallback callback) : Control(parent), m_callback{std::move(callback)} {
     m_parent->getCallbackManager()->addButtonCallback(this);
+    computeNode();
 }
 
 void Button::onClick() {
     m_callback(this);
 }
 
-CTML::Node Button::getNode() const {
-    auto buttonDiv = CTML::Node{"div.Button#"+m_id.id};
-    buttonDiv.SetAttribute("onclick", "uiclick(this.id);").SetContent(m_text);
-    return buttonDiv;
+void Button::computeNode() {
+    m_node.SetName("div.Button#"+m_id.id);
+    m_node.SetAttribute("onclick", "uiclick(this.id);");
+    m_node.AppendText("Button!");
 }

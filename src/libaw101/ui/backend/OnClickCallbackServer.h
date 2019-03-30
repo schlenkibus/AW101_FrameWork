@@ -4,9 +4,9 @@
 #include <seasocks/WebSocket.h>
 #include <seasocks/PrintfLogger.h>
 #include <seasocks/Server.h>
+#include <thread>
 
 class LayoutCallbackManager;
-
 
 struct ClickHandler : seasocks::WebSocket::Handler {
     std::set<seasocks::WebSocket *> connections;
@@ -24,16 +24,14 @@ struct ClickHandler : seasocks::WebSocket::Handler {
     }
 };
 
-void chat() {
-    (std::make_shared<seasocks::PrintfLogger>());
-}
-
 class OnClickCallbackServer
 {
 public:
     OnClickCallbackServer(LayoutCallbackManager* manager);
+    virtual ~OnClickCallbackServer();
 protected:
     LayoutCallbackManager* m_manager;
     seasocks::Server m_server;
+    std::thread m_bg;
 };
 

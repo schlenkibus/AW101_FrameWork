@@ -1,14 +1,15 @@
 #include "Control.h"
 
 Control::Control(AW101Layout *parent) : m_parent{parent} {
-
-}
-
-void Control::setText(const std::string &string) {
-    m_text = string;
-    onChange();
+    registerCallback([](Control* c) {
+        c->computeNode();
+    });
 }
 
 const UIID &Control::getID() const {
     return m_id;
+}
+
+const CTML::Node &Control::getNode() const {
+    return m_node;
 }

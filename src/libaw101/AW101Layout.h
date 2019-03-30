@@ -7,6 +7,7 @@ class AW101Layout {
 public:
     AW101Layout();
     LayoutCallbackManager* getCallbackManager();
+    CTML::Document getDocument() const;
 protected:
     Container m_root;
     LayoutCallbackManager m_callbackManager;

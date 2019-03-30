@@ -18,9 +18,10 @@
 
 int main(int argc, char** argv) {
     TestModel model;
-    LayoutServer server{80};
-    auto testLayout = std::make_unique<TestLayout>{&model};
-    server.addLayout(std::move(testLayout), "/");
-    server.serve();
-    return ;
+    LayoutServer server{8090};
+    auto layout = std::make_unique<TestLayout>(&model);
+    server.addLayout<TestLayout>(layout, "/foo");
+    while(!server.isQuit())
+        server.loop();
+    return 0;
 }

@@ -10,8 +10,8 @@ public:
     Button(AW101Layout* parent, tButtonCallback callback);
 
     virtual void onClick();
+    void computeNode() override;
 
-    CTML::Node getNode() const override;
 protected:
     tButtonCallback m_callback;
 };
