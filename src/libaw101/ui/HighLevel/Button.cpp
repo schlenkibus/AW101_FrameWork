@@ -13,7 +13,7 @@ void Button::onClick() {
 
 void Button::computeNode() {
     clear();
-    m_node.SetName("div.Button#"+m_id.id);
+    m_node.SetName("button.Button#"+m_id.id);
     m_node.SetAttribute("onclick", "uiclick(this.id);");
     m_node.AppendText("Button!");
 }

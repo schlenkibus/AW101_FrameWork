@@ -40,6 +40,7 @@ public:
     virtual ~OnClickCallbackServer();
 
     void updateNode(Control *pControl);
+    seasocks::Server* getServer();
 
 protected:
     LayoutCallbackManager* m_manager;

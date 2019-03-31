@@ -5,6 +5,9 @@
 class TestLayout : public AW101Layout {
 public:
     TestLayout(TestModel* model);
+
+    void loop() override;
+
 protected:
     TestModel* m_model;
 };

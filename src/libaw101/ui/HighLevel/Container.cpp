@@ -19,3 +19,11 @@ void Container::computeNode() {
     }
 }
 
+Control *Container::getControlById(std::string &id) {
+    for(auto& c: m_children) {
+        if(c->getID().id == id)
+            return c.get();
+    }
+    return nullptr;
+}
+

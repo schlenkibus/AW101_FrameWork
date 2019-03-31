@@ -10,11 +10,15 @@ public:
 
     void computeNode() override;
 
-    void addChild(std::unique_ptr<Control>&& ptr) {
+    Control * addChild(std::unique_ptr<Control> &&ptr) {
         m_children.emplace_back(std::move(ptr));
         onChange();
+        return m_children.back().get();
     }
     std::vector<std::unique_ptr<Control>> & getChildren();
+
+    Control *getControlById(std::string &id);
+
 protected:
     std::vector<std::unique_ptr<Control>> m_children;
 };

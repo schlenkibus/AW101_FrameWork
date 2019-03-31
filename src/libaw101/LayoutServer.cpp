@@ -15,5 +15,5 @@ void LayoutServer::quit() {
 
 
 void LayoutServer::loop() {
-    std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    m_layouts["/foo"]->loop();
 }
