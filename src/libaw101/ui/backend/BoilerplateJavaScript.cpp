@@ -11,7 +11,10 @@ const std::string BoilerplateJavaScript::getScriptContent() const {
             "updateNode(id, payload);"
             "};"\
             "function uiclick(id) {"\
-            "onClickWS.send(id);"\
+            "onClickWS.send('event4down'+id);"\
+            "}"\
+            "function uirelease(id) {"\
+            "onClickWS.send('event2up'+id);"\
             "}"\
             "function htmlToElement(html) {"\
             "var template = document.createElement('template');"\

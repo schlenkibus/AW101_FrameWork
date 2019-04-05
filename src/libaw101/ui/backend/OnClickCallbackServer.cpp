@@ -38,10 +38,24 @@ seasocks::Server *OnClickCallbackServer::getServer() {
 
 void ClickHandler::onData(seasocks::WebSocket *, const char *data) {
     std::string recieved{data};
-    std::cout << recieved << std::endl;
-    if(m_manager) {
-        auto id = UIID{recieved};
-        m_manager->onClickReceived(id);
+    if(recieved.find("event") == 0) {
+        auto commandLength = [recieved]{
+            std::string numbers;
+            for(auto c: recieved) {
+                if(std::isdigit(c))
+                    numbers += c;
+                else if(!numbers.empty())
+                    break;
+            }
+            return std::stoi(numbers);
+        }();
+        auto commandStr = recieved.substr(6, commandLength);
+        auto id = UIID{recieved.substr(recieved.find("UIID:"))};
+        if(commandStr == "down") {
+            m_manager->onClickReceived(id);
+        } else if(commandStr == "up") {
+            m_manager->onReleaseReceived(id);
+        }
     }
 }
 

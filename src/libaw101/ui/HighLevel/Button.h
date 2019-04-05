@@ -13,7 +13,7 @@ public:
     void computeNode() override;
 
 protected:
-    tButtonCallback m_callback;
+    tButtonCallback m_downCallback;
 };
 
 

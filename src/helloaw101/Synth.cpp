@@ -1,4 +1,6 @@
 #include "Synth.h"
+#include <iostream>
+#include <cmath>
 
 Synth::Synth() {
     Pa_Initialize();
@@ -11,7 +13,6 @@ Synth::Synth() {
                                patestCallback,
                                &m_data);
     Pa_StartStream(m_stream);
-    Pa_Sleep(3000);
 }
 
 Synth::~Synth() {
@@ -19,6 +20,20 @@ Synth::~Synth() {
     Pa_Terminate();
 }
 
-float Synth::calcSample(float phase) {
-    ;
+
+float Synth::doDsp(float& phase) {
+    if(m_data.gate) {
+        phase += 0.01f;
+        if( phase >= 1.0f ) phase = -1.0f;
+        return std::sin(phase * 440 / 44100.f);
+    }
+    return 0;
+}
+
+void Synth::noteOn() {
+    m_data.gate = true;
+}
+
+void Synth::noteOff() {
+    m_data.gate = false;
 }

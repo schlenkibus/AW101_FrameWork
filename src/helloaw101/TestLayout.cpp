@@ -1,6 +1,7 @@
 #include "TestLayout.h"
 #include "../libaw101/ui/HighLevel/Button.h"
 #include "../libaw101/ui/HighLevel/Label.h"
+#include "../libaw101/ui/HighLevel/ReleaseButton.h"
 
 TestLayout::TestLayout(TestModel *model) : m_model{model} {
 
@@ -10,6 +11,12 @@ TestLayout::TestLayout(TestModel *model) : m_model{model} {
         if(auto label = dynamic_cast<Label*>(control))
             label->setText(std::to_string(m_model->foo));
         onChange();
+    }));
+
+    m_root.addChild(std::make_unique<ReleaseButton>(this, [this, &model](Button* b){
+       m_model->m_synth.noteOn();
+    }, [this, &model](Button* b) {
+        m_model->m_synth.noteOff();
     }));
 
     auto labelPtr2 = m_root.addChild(std::make_unique<Label>(this, std::to_string(m_model->foo)));

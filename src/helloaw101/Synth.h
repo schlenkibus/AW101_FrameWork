@@ -12,7 +12,6 @@ public:
         Synth* m_synth;
     } paTestData;
 
-    float calcSample(float phase);
 
     static int patestCallback(const void *inputBuffer, void *outputBuffer,
                               unsigned long framesPerBuffer,
@@ -28,21 +27,22 @@ public:
 
         for( i=0; i<framesPerBuffer; i++ )
         {
-            *out++ = data->m_synth->dsp(data->left_phase);  /* left */
-            *out++ = data->m_synth->dsp(data->right_phase);  /* right */
-            /* Generate simple sawtooth phaser that ranges between -1.0 and 1.0. */
-            data->left_phase += 0.01f;
-            /* When signal reaches top, drop back down. */
-            if( data->left_phase >= 1.0f ) data->left_phase -= 2.0f;
-            /* higher pitch so we can distinguish left and right. */
-            data->right_phase += 0.03f;
-            if( data->right_phase >= 1.0f ) data->right_phase -= 2.0f;
+            if(data->gate) {
+                *out++ = data->m_synth->doDsp(data->left_phase);
+                *out++ = data->m_synth->doDsp(data->right_phase);
+            } else {
+                *out++ = 0;
+                *out++ = 0;
+            }
         }
         return 0;
     }
 
     Synth();
     ~Synth();
+    void noteOn();
+    void noteOff();
+    float doDsp(float& phase);
 protected:
     paTestData m_data;
     PaStream *m_stream;

@@ -1,5 +1,6 @@
 #include "LayoutCallbackManager.h"
 #include "PortBroker.h"
+#include "../HighLevel/ReleaseButton.h"
 
 LayoutCallbackManager::LayoutCallbackManager() : m_clickServer{this} {
 
@@ -13,6 +14,16 @@ void LayoutCallbackManager::onClickReceived(const UIID &id) {
     for(auto& b: m_buttons) {
         if(b->getID().id == id.id) {
             b->onClick();
+        }
+    }
+}
+
+void LayoutCallbackManager::onReleaseReceived(UIID uiid) {
+    for(auto& b: m_buttons) {
+        if(auto releaseButton = dynamic_cast<ReleaseButton*>(b)) {
+            if(b->getID().id == uiid.id) {
+                releaseButton->onRelease();
+            }
         }
     }
 }
