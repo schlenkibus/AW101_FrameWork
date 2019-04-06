@@ -50,11 +50,19 @@ void ClickHandler::onData(seasocks::WebSocket *, const char *data) {
             return std::stoi(numbers);
         }();
         auto commandStr = recieved.substr(6, commandLength);
-        auto id = UIID{recieved.substr(recieved.find("UIID:"))};
         if(commandStr == "down") {
+            auto id = UIID{recieved.substr(recieved.find("UIID:"))};
             m_manager->onClickReceived(id);
         } else if(commandStr == "up") {
+            auto id = UIID{recieved.substr(recieved.find("UIID:"))};
             m_manager->onReleaseReceived(id);
+        } else if(commandStr == "changed") {
+            auto uiidPos = recieved.find("UIID:") - 5;
+            auto valuepos = recieved.find("value") - 5;
+            auto idStr = recieved.substr(uiidPos + 5, valuepos - uiidPos);
+            auto id = UIID{idStr};
+            auto value = recieved.substr(valuepos + 10);
+            m_manager->onValueChanged(id, std::stoi(value));
         }
     }
 }

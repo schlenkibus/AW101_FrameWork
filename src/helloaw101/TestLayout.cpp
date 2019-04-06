@@ -2,14 +2,15 @@
 #include "../libaw101/ui/HighLevel/Button.h"
 #include "../libaw101/ui/HighLevel/Label.h"
 #include "../libaw101/ui/HighLevel/ReleaseButton.h"
+#include "../libaw101/ui/HighLevel/Slider.h"
 
 TestLayout::TestLayout(TestModel *model) : m_model{model} {
 
     m_root.addChild(std::make_unique<Button>(this, [this, &model](Button* b){
-        m_model->foo += 1;
+        m_model->m_synth.incPhaseInc();
         auto control = m_root.getControlById(m_model->generic_storage["click_label_uiid"]);
         if(auto label = dynamic_cast<Label*>(control))
-            label->setText(std::to_string(m_model->foo));
+            label->setText(std::to_string(m_model->m_synth.getPhaseInc()));
         onChange();
     }));
 
@@ -19,7 +20,11 @@ TestLayout::TestLayout(TestModel *model) : m_model{model} {
         m_model->m_synth.noteOff();
     }));
 
-    auto labelPtr2 = m_root.addChild(std::make_unique<Label>(this, std::to_string(m_model->foo)));
+    m_root.addChild(std::make_unique<Slider>(this, 1, 1, 100, [this, &model](Slider* s) {
+        m_model->m_synth.setPhaseInc(s->getValue());
+    }));
+
+    auto labelPtr2 = m_root.addChild(std::make_unique<Label>(this, std::to_string(m_model->m_synth.getPhaseInc())));
     m_model->generic_storage["click_label_uiid"] = labelPtr2->getID().id;
 
     auto labelPtr = m_root.addChild(std::make_unique<Label>(this, std::to_string(m_model->foo)));

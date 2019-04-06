@@ -16,6 +16,9 @@ const std::string BoilerplateJavaScript::getScriptContent() const {
             "function uirelease(id) {"\
             "onClickWS.send('event2up'+id);"\
             "}"\
+            "function valuechange(id,value) {"\
+            "onClickWS.send('event7changed'+id+'value'+value)"\
+            "}"\
             "function htmlToElement(html) {"\
             "var template = document.createElement('template');"\
             "html = html.trim();"\

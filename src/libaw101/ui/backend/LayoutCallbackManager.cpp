@@ -1,6 +1,7 @@
 #include "LayoutCallbackManager.h"
 #include "PortBroker.h"
 #include "../HighLevel/ReleaseButton.h"
+#include "../HighLevel/Slider.h"
 
 LayoutCallbackManager::LayoutCallbackManager() : m_clickServer{this} {
 
@@ -8,6 +9,10 @@ LayoutCallbackManager::LayoutCallbackManager() : m_clickServer{this} {
 
 void LayoutCallbackManager::addButtonCallback(Button *button) {
     m_buttons.emplace_back(button);
+}
+
+void LayoutCallbackManager::addSlider(Slider *slider) {
+    m_sliders.emplace_back(slider);
 }
 
 void LayoutCallbackManager::onClickReceived(const UIID &id) {
@@ -30,4 +35,13 @@ void LayoutCallbackManager::onReleaseReceived(UIID uiid) {
 
 void LayoutCallbackManager::updateNode(Control *control) {
     m_clickServer.updateNode(control);
+}
+
+void LayoutCallbackManager::onValueChanged(const UIID &id, int value) {
+    for(auto& s: m_sliders) {
+        if(s->getID().id == id.id) {
+            s->onValueChanged(value);
+            break;
+        }
+    }
 }

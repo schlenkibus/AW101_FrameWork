@@ -13,6 +13,7 @@ Synth::Synth() {
                                patestCallback,
                                &m_data);
     Pa_StartStream(m_stream);
+    m_data.m_synth = this;
 }
 
 Synth::~Synth() {
@@ -23,9 +24,22 @@ Synth::~Synth() {
 
 float Synth::doDsp(float& phase) {
     if(m_data.gate) {
-        phase += 0.01f;
-        if( phase >= 1.0f ) phase = -1.0f;
-        return std::sin(phase * 440 / 44100.f);
+        phase += m_data.phaseInc;
+        auto sample = 0;
+
+        auto sawPhase = phase;
+        if( sawPhase >= m_data.m_sawTable.getSize() )
+            sawPhase = phase - m_data.m_sawTable.getSize();
+        auto saw = m_data.m_sawTable.get(sawPhase);
+
+        auto sinePhase = phase;
+        if( sinePhase >= m_data.m_sineTable.getSize() )
+            sinePhase = phase - m_data.m_sineTable.getSize();
+        auto sine = m_data.m_sineTable.get(sinePhase);
+
+        if( phase >= m_data.m_sineTable.getSize() && phase >= m_data.m_sawTable.getSize())
+            phase = 0;
+        return sine + saw;
     }
     return 0;
 }
@@ -36,4 +50,18 @@ void Synth::noteOn() {
 
 void Synth::noteOff() {
     m_data.gate = false;
+}
+
+void Synth::incPhaseInc() {
+    m_data.phaseInc += 1;
+    if(m_data.phaseInc >= 200)
+        m_data.phaseInc = 1;
+}
+
+void Synth::setPhaseInc(int inc) {
+    m_data.phaseInc = inc;
+}
+
+int Synth::getPhaseInc() {
+    return m_data.phaseInc;
 }
