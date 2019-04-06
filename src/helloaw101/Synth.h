@@ -6,6 +6,7 @@
 #include "portaudio.h"
 #include "audio_foo/Oscillator.h"
 #include "audio_foo/LowPassFilter.h"
+#include "audio_foo/LowFrequencyOscillator.h"
 
 class Synth {
 public:
@@ -86,7 +87,7 @@ public:
     struct paTestData
     {
     public:
-        paTestData(Synth* s) : m_ramp{std::chrono::milliseconds(350)}, m_filter{500} {
+        paTestData(Synth* s) : m_ramp{std::chrono::milliseconds(350)}, m_filter{500}, m_lfo{1}, m_lfo2{1} {
             m_synth = s;
         }
         float left_phase = 0;
@@ -96,6 +97,8 @@ public:
         Oscillator<SineWaveTable<15000>> m_I;
         Oscillator<SineWaveTable<15000>> m_II;
         LowPassFilter m_filter;
+        LowFrequencyOscillator<SineWaveTable<25000>> m_lfo;
+        LowFrequencyOscillator<SineWaveTable<25000>> m_lfo2;
         float factor = 0.5;
 
 

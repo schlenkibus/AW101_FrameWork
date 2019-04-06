@@ -9,6 +9,7 @@ public:
         m_phaseInc = 1;
         m_phase = 0;
         lastPosInFrame = -1;
+        m_offset = 0;
     }
     void setInc(int phaseInc) {
         m_phaseInc = phaseInc;

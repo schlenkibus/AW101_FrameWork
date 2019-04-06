@@ -22,8 +22,8 @@ Synth::~Synth() {
 
 
 float Synth::doDsp(int posInFrame) {
-    auto I = m_data.m_I.get(posInFrame);
-    auto II = m_data.m_II.get(posInFrame);
+    auto I = m_data.m_lfo.get(posInFrame) + m_data.m_I.get(posInFrame);
+    auto II = m_data.m_lfo2.get(posInFrame) + m_data.m_II.get(posInFrame);
     auto combined = (m_data.factor * I + (1 - m_data.factor) * II);
     return m_data.m_ramp.getAmp(posInFrame) * m_data.m_filter.filter(combined, posInFrame);
 }

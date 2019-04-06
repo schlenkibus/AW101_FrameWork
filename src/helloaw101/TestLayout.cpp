@@ -44,9 +44,27 @@ TestLayout::TestLayout(TestModel *model) : m_model{model} {
     auto cutoffId = m_root.addChild(std::make_unique<Label>(this, "0.025"))->getID().id;
     m_root.addChild(std::make_unique<Slider>(this, 25, 1, 10000, [this, &model, cutoffId](Slider* s) {
         auto label = dynamic_cast<Label*>(m_root.getControlById(cutoffId));
-        auto val = s->getValue() / 100000.0;
+        auto val = s->getValue() / 100000.0f;
         label->setText(std::to_string(val));
         m_model->m_synth.m_data.m_filter.setCutoffFrequency(val);
+    }));
+
+    m_root.addChild(std::make_unique<Label>(this, "LFO I Phase Inc"));
+    auto lfoID = m_root.addChild(std::make_unique<Label>(this, "1"))->getID().id;
+    m_root.addChild(std::make_unique<Slider>(this, 1, 1, 25000, [this, &model, lfoID](Slider* s) {
+        auto label = dynamic_cast<Label*>(m_root.getControlById(lfoID));
+        auto val = s->getValue();
+        label->setText(std::to_string(val));
+        m_model->m_synth.m_data.m_lfo.setFreq(val);
+    }));
+
+    m_root.addChild(std::make_unique<Label>(this, "LFO II Phase Inc"));
+    auto lfoID2 = m_root.addChild(std::make_unique<Label>(this, "1"))->getID().id;
+    m_root.addChild(std::make_unique<Slider>(this, 1, 1, 25000, [this, &model, lfoID2](Slider* s) {
+        auto label = dynamic_cast<Label*>(m_root.getControlById(lfoID2));
+        auto val = s->getValue();
+        label->setText(std::to_string(val));
+        m_model->m_synth.m_data.m_lfo2.setFreq(val);
     }));
 }
 
