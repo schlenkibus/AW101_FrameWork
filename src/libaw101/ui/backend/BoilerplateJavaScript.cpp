@@ -6,8 +6,9 @@ const std::string BoilerplateJavaScript::getScriptContent() const {
             "onClickWS.onmessage = function(event) {"\
             "console.log(event);"\
             "var text = event.data;"\
-            "var id = text.substring(0,6);"\
-            "var payload = text.substring(7);"\
+            "var dataentry = text.indexOf('DATA');"\
+            "var id = text.substring(0,dataentry);"\
+            "var payload = text.substring(dataentry+4);"\
             "updateNode(id, payload);"
             "};"\
             "function uiclick(id) {"\

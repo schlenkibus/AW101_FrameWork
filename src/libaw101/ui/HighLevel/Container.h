@@ -17,7 +17,7 @@ public:
     }
     std::vector<std::unique_ptr<Control>> & getChildren();
 
-    Control *getControlById(std::string &id);
+    Control *getControlById(const std::string &id);
 
 protected:
     std::vector<std::unique_ptr<Control>> m_children;

@@ -29,7 +29,7 @@ OnClickCallbackServer::~OnClickCallbackServer() {
 }
 
 void OnClickCallbackServer::updateNode(Control *pControl) {
-    m_webSocketHandler->sendToClients(pControl->getID().id + "_" + pControl->getNode().ToString(CTML::StringFormatting::SINGLE_LINE));
+    m_webSocketHandler->sendToClients(pControl->getID().id + "DATA" + pControl->getNode().ToString(CTML::StringFormatting::SINGLE_LINE));
 }
 
 seasocks::Server *OnClickCallbackServer::getServer() {

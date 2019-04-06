@@ -2,7 +2,10 @@
 
 #include <array>
 #include <cmath>
+#include <chrono>
 #include "portaudio.h"
+#include "audio_foo/Oscillator.h"
+#include "audio_foo/LowPassFilter.h"
 
 class Synth {
 public:
@@ -34,19 +37,71 @@ public:
         std::array<float, size> m_data;
     };
 
-    typedef struct
+    struct Envelope {
+    public:
+        Envelope(std::chrono::steady_clock::duration rampLength) {
+            m_lengthInPhases = rampLength.count() / 44100;
+            m_currentPhaseInNote = -1;
+        }
+        void noteOn() {
+            m_currentPhaseInNote = 0;
+            release = false;
+        }
+
+        void noteOff() {
+            m_currentPhaseInNote = m_lengthInPhases;
+            release = true;
+        }
+        float getAmp(int phase) {
+            if(m_currentPhaseInNote == -1)
+                return 0;
+
+            if(phase != lastPhase) {
+                if(release)
+                    m_currentPhaseInNote--;
+                else
+                    m_currentPhaseInNote++;
+                lastPhase = phase;
+            }
+
+
+            if(m_currentPhaseInNote == 0 && release) {
+                m_currentPhaseInNote = -1;
+                release = false;
+            }
+
+            if(m_currentPhaseInNote > m_lengthInPhases)
+                return 1;
+
+            return (float)m_currentPhaseInNote / (float)m_lengthInPhases;
+        }
+
+    protected:
+        long m_currentPhaseInNote;
+        long m_lengthInPhases;
+        int lastPhase = -1;
+        bool release = false;
+    };
+
+    struct paTestData
     {
+    public:
+        paTestData(Synth* s) : m_ramp{std::chrono::milliseconds(350)}, m_filter{500} {
+            m_synth = s;
+        }
         float left_phase = 0;
-        float phase = 0;
         float right_phase = 0;
-        bool gate = false;
-        int freqInHZ = 440;
         Synth* m_synth;
-        SineWaveTable<5000> m_sineTable;
-        SawWaveTable<3000> m_sawTable;
-        bool saw = true;
-        int phaseInc = 1;
-    } paTestData;
+        Envelope m_ramp;
+        Oscillator<SineWaveTable<15000>> m_I;
+        Oscillator<SineWaveTable<15000>> m_II;
+        LowPassFilter m_filter;
+        float factor = 0.5;
+
+
+        int phaseIncOscI = 1;
+        int phaseIncOSCII = 1;
+    };
 
 
     static int patestCallback(const void *inputBuffer, void *outputBuffer,
@@ -63,13 +118,8 @@ public:
 
         for( i=0; i<framesPerBuffer; i++ )
         {
-            if(data->gate) {
-                *out++ = data->m_synth->doDsp(data->left_phase);
-                *out++ = data->m_synth->doDsp(data->right_phase);
-            } else {
-                *out++ = 0;
-                *out++ = 0;
-            }
+            *out++ = data->m_synth->doDsp(i);
+            *out++ = data->m_synth->doDsp(i);
         }
         return 0;
     }
@@ -78,14 +128,9 @@ public:
     ~Synth();
     void noteOn();
     void noteOff();
-    float doDsp(float& phase);
-
-    void incPhaseInc();
-    void setPhaseInc(int inc);
-    int getPhaseInc();
-
-protected:
+    float doDsp(int posInFrame);
     paTestData m_data;
+protected:
     PaStream *m_stream;
 };
 
