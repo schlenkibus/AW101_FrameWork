@@ -17,18 +17,17 @@ public:
     float get(int posInFrame) {
         if(posInFrame != lastPosInFrame) {
             lastPosInFrame = posInFrame;
-            m_phase += m_phaseInc;
-            if(m_phase + m_offset >= m_data.getSize()) {
-                m_phase = (m_phase) - m_data.getSize();
+            m_phase += m_phaseInc + m_offset;
+            if(m_phase >= m_data.getSize()) {
+                m_phase = 0;
             }
         }
-        return m_data.get(m_phase + m_offset);
+        return m_data.get(m_phase);
     }
 
     void setOffset(int i) {
         m_offset = i;
     }
-
 protected:
     int lastPosInFrame;
     int m_phaseInc;

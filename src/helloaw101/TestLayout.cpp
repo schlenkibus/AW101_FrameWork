@@ -3,41 +3,25 @@
 #include "../libaw101/ui/HighLevel/Label.h"
 #include "../libaw101/ui/HighLevel/ReleaseButton.h"
 #include "../libaw101/ui/HighLevel/Slider.h"
+#include "ui/Piano.h"
 
 TestLayout::TestLayout(TestModel *model) : m_model{model} {
 
-    m_root.addChild(std::make_unique<ReleaseButton>(this, [this, &model](Button* b){
-       m_model->m_synth.noteOn();
-    }, [this, &model](Button* b) {
-        m_model->m_synth.noteOff();
-    }));
+    m_root.addChild(std::make_unique<Piano>(this, m_model));
 
-    m_root.addChild(std::make_unique<Label>(this, "Phase Inc I"));
+
+    m_root.addChild(std::make_unique<Label>(this, "OSC I Tune"));
     auto phaseIncI = m_root.addChild(std::make_unique<Label>(this, "0"))->getID().id;
     m_root.addChild(std::make_unique<Slider>(this, 1, 1, 500, [this, &model, phaseIncI](Slider* s) {
         dynamic_cast<Label*>(m_root.getControlById(phaseIncI))->setText(std::to_string(s->getValue()));
-        m_model->m_synth.m_data.m_I.setInc(s->getValue());
+        m_model->m_synth.setIncI(s->getValue());
     }));
 
-    m_root.addChild(std::make_unique<Label>(this, "Phase Offset I"));
-    auto phaseOffI = m_root.addChild(std::make_unique<Label>(this, "0"))->getID().id;
-    m_root.addChild(std::make_unique<Slider>(this, 1, 1, 15000, [this, &model, phaseOffI](Slider* s) {
-        dynamic_cast<Label*>(m_root.getControlById(phaseOffI))->setText(std::to_string(s->getValue()));
-        m_model->m_synth.m_data.m_I.setOffset(s->getValue());
-    }));
-
-    m_root.addChild(std::make_unique<Label>(this, "Phase Inc II"));
+    m_root.addChild(std::make_unique<Label>(this, "OSC II Tune"));
     auto phaseIncII = m_root.addChild(std::make_unique<Label>(this, "0"))->getID().id;
     m_root.addChild(std::make_unique<Slider>(this, 1, 1, 500, [this, &model, phaseIncII](Slider* s) {
         dynamic_cast<Label*>(m_root.getControlById(phaseIncII))->setText(std::to_string(s->getValue()));
-        m_model->m_synth.m_data.m_II.setInc(s->getValue());
-    }));
-
-    m_root.addChild(std::make_unique<Label>(this, "Phase Offset II"));
-    auto phaseOffSetII = m_root.addChild(std::make_unique<Label>(this, "0"))->getID().id;
-    m_root.addChild(std::make_unique<Slider>(this, 1, 1, 15000, [this, &model, phaseOffSetII](Slider* s) {
-        dynamic_cast<Label*>(m_root.getControlById(phaseOffSetII))->setText(std::to_string(s->getValue()));
-        m_model->m_synth.m_data.m_II.setOffset(s->getValue());
+        m_model->m_synth.setIncII(s->getValue());
     }));
 
     m_root.addChild(std::make_unique<Label>(this, "Lowpass Cutoff"));
@@ -46,25 +30,25 @@ TestLayout::TestLayout(TestModel *model) : m_model{model} {
         auto label = dynamic_cast<Label*>(m_root.getControlById(cutoffId));
         auto val = s->getValue() / 100000.0f;
         label->setText(std::to_string(val));
-        m_model->m_synth.m_data.m_filter.setCutoffFrequency(val);
+        m_model->m_synth.setCutoffFrequency(val);
     }));
 
     m_root.addChild(std::make_unique<Label>(this, "LFO I Phase Inc"));
     auto lfoID = m_root.addChild(std::make_unique<Label>(this, "1"))->getID().id;
-    m_root.addChild(std::make_unique<Slider>(this, 1, 1, 25000, [this, &model, lfoID](Slider* s) {
+    m_root.addChild(std::make_unique<Slider>(this, 1, 1, 1000, [this, &model, lfoID](Slider* s) {
         auto label = dynamic_cast<Label*>(m_root.getControlById(lfoID));
         auto val = s->getValue();
         label->setText(std::to_string(val));
-        m_model->m_synth.m_data.m_lfo.setFreq(val);
+        m_model->m_synth.setLFOIncI(val);
     }));
 
     m_root.addChild(std::make_unique<Label>(this, "LFO II Phase Inc"));
     auto lfoID2 = m_root.addChild(std::make_unique<Label>(this, "1"))->getID().id;
-    m_root.addChild(std::make_unique<Slider>(this, 1, 1, 25000, [this, &model, lfoID2](Slider* s) {
+    m_root.addChild(std::make_unique<Slider>(this, 1, 1, 1000, [this, &model, lfoID2](Slider* s) {
         auto label = dynamic_cast<Label*>(m_root.getControlById(lfoID2));
         auto val = s->getValue();
         label->setText(std::to_string(val));
-        m_model->m_synth.m_data.m_lfo2.setFreq(val);
+        m_model->m_synth.setLFOIncII(val);
     }));
 }
 

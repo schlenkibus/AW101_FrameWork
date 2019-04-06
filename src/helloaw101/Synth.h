@@ -6,7 +6,6 @@
 #include "portaudio.h"
 #include "audio_foo/Oscillator.h"
 #include "audio_foo/LowPassFilter.h"
-#include "audio_foo/LowFrequencyOscillator.h"
 
 class Synth {
 public:
@@ -84,26 +83,49 @@ public:
         bool release = false;
     };
 
+    class Voice {
+    public:
+        Voice(int key = 0);
+        float doDsp(int posInFrame);
+        Oscillator<SineWaveTable<10000>> m_oscI;
+        Oscillator<SineWaveTable<10000>> m_oscII;
+        Oscillator<SineWaveTable<40000>> m_lfoI;
+        Oscillator<SineWaveTable<40000>> m_lfoII;
+        Envelope m_ampEnv;
+        LowPassFilter m_filter;
+        int m_key;
+
+        void noteOn();
+        void noteOff();
+    };
+
     struct paTestData
     {
-    public:
-        paTestData(Synth* s) : m_ramp{std::chrono::milliseconds(350)}, m_filter{500}, m_lfo{1}, m_lfo2{1} {
-            m_synth = s;
+        void removeNote(int key) {
+            for(auto& v: m_voices) {
+                if(v.m_key == key)
+                    v.noteOff();
+            }
         }
-        float left_phase = 0;
-        float right_phase = 0;
+
+    public:
+        paTestData(Synth* s) : m_synth{s} {
+        }
+        Voice* addNoteOn(int key) {
+            m_voices[nextVoiceIndex].m_key = key;
+            m_voices[nextVoiceIndex].m_oscI.setOffset(key);
+            m_voices[nextVoiceIndex].m_oscII.setOffset(key);
+            auto ret = &m_voices[nextVoiceIndex];
+            nextVoiceIndex++;
+            if(nextVoiceIndex >= 4)
+                nextVoiceIndex = 0;
+            ret->noteOn();
+            return ret;
+        }
+        std::array<Voice, 4> m_voices;
         Synth* m_synth;
-        Envelope m_ramp;
-        Oscillator<SineWaveTable<15000>> m_I;
-        Oscillator<SineWaveTable<15000>> m_II;
-        LowPassFilter m_filter;
-        LowFrequencyOscillator<SineWaveTable<25000>> m_lfo;
-        LowFrequencyOscillator<SineWaveTable<25000>> m_lfo2;
-        float factor = 0.5;
-
-
-        int phaseIncOscI = 1;
-        int phaseIncOSCII = 1;
+    protected:
+        int nextVoiceIndex = 0;
     };
 
 
@@ -129,10 +151,23 @@ public:
 
     Synth();
     ~Synth();
-    void noteOn();
-    void noteOff();
     float doDsp(int posInFrame);
     paTestData m_data;
+
+    void setIncI(int inc);
+
+    void setOffsetI(int offset);
+
+    void setIncII(int inc);
+
+    void setOffsetII(int offset);
+
+    void setCutoffFrequency(float cutoff);
+
+    void setLFOIncI(int inc);
+
+    void setLFOIncII(int inc);
+
 protected:
     PaStream *m_stream;
 };
