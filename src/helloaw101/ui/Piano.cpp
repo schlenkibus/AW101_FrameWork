@@ -1,18 +1,15 @@
 #include "Piano.h"
 #include "../TestLayout.h"
 #include "../../libaw101/ui/HighLevel/ReleaseButton.h"
+#include "../../libaw101/ui/HighLevel/Label.h"
 
 Piano::Piano(TestLayout *tl, TestModel *model)
     : Container(tl)
     , m_model{model}
     , m_nextVoiceIndex{0}
 {
-    for(auto i = 0; i < 16; i++)
-        m_children.emplace_back(std::make_unique<ReleaseButton>(tl, [this, &model, i](Button* b) {
-            onDown(i);
-        }, [this, i](Button* b) {
-            onRelease(i);
-        }));
+    m_parent->getCallbackManager()->addKeyEventTarget(this);
+    addChild(std::make_unique<Label>(tl, "Piano"));
 }
 
 void Piano::computeNode() {
@@ -28,4 +25,20 @@ void Piano::onDown(int key) {
 
 void Piano::onRelease(int key) {
     m_model->m_synth.m_data.removeNote(key);
+}
+
+void Piano::onKeyDown(const std::string &key) {
+    try {
+        onDown(std::stoi(key));
+    } catch(...) {
+        std::cerr << key << " not a valid number" << std::endl;
+    }
+}
+
+void Piano::onKeyUp(const std::string &key) {
+    try {
+        onRelease(std::stoi(key));
+    } catch(...) {
+        std::cerr << key << " not a valid number" << std::endl;
+    }
 }

@@ -45,3 +45,19 @@ void LayoutCallbackManager::onValueChanged(const UIID &id, int value) {
         }
     }
 }
+
+void LayoutCallbackManager::onKeyDown(std::string key) {
+    for(auto& target: m_keyEventTargets) {
+        target->onKeyDown(key);
+    }
+}
+
+void LayoutCallbackManager::onKeyUp(std::string key) {
+    for(auto& target: m_keyEventTargets) {
+        target->onKeyUp(key);
+    }
+}
+
+void LayoutCallbackManager::addKeyEventTarget(KeyEventTarget* target) {
+    m_keyEventTargets.emplace_back(target);
+}

@@ -39,48 +39,68 @@ public:
 
     struct Envelope {
     public:
+        enum State {
+            None, Attack, Sustain, Decay
+        };
+
         Envelope(std::chrono::steady_clock::duration rampLength) {
-            m_lengthInPhases = rampLength.count() / 44100;
+            m_state = None;
+            setAttack(rampLength);
+            setDecay(rampLength);
             m_currentPhaseInNote = -1;
         }
+        void setAttack(std::chrono::steady_clock::duration attack) {
+            m_attackInPhases = attack.count() / 44100;
+        }
+        void setDecay(std::chrono::steady_clock::duration decay)  {
+            m_decayInPhases = decay.count() / 44100;
+        }
+
         void noteOn() {
             m_currentPhaseInNote = 0;
-            release = false;
+            m_state = Attack;
+        }
+        void noteOff() {
+            m_state = Decay;
+            m_currentPhaseInNote = m_decayInPhases;
         }
 
-        void noteOff() {
-            m_currentPhaseInNote = m_lengthInPhases;
-            release = true;
-        }
         float getAmp(int phase) {
-            if(m_currentPhaseInNote == -1)
+            if(m_state == None)
                 return 0;
 
+            if(m_state == Sustain)
+                return 1;
+
             if(phase != lastPhase) {
-                if(release)
-                    m_currentPhaseInNote--;
-                else
-                    m_currentPhaseInNote++;
+                switch(m_state) {
+                    case Attack:
+                        m_currentPhaseInNote++;
+                        break;
+                    case Decay:
+                        m_currentPhaseInNote--;
+                        break;
+                }
                 lastPhase = phase;
             }
 
-
-            if(m_currentPhaseInNote == 0 && release) {
-                m_currentPhaseInNote = -1;
-                release = false;
+            if(m_state == Attack) {
+                if(m_currentPhaseInNote >= m_attackInPhases)
+                    m_state = Sustain;
+                return (float)m_currentPhaseInNote / (float)m_attackInPhases;
+            } else if(m_state == Decay) {
+                if(m_currentPhaseInNote <= 0)
+                    m_state = None;
+                return (float)m_currentPhaseInNote / (float)m_decayInPhases;
             }
 
-            if(m_currentPhaseInNote > m_lengthInPhases)
-                return 1;
-
-            return (float)m_currentPhaseInNote / (float)m_lengthInPhases;
         }
-
     protected:
+        State m_state;
         long m_currentPhaseInNote;
-        long m_lengthInPhases;
+        long m_decayInPhases;
+        long m_attackInPhases;
         int lastPhase = -1;
-        bool release = false;
     };
 
     class Voice {
@@ -94,6 +114,7 @@ public:
         Envelope m_ampEnv;
         LowPassFilter m_filter;
         int m_key;
+        bool m_gate;
 
         void noteOn();
         void noteOff();
@@ -112,6 +133,14 @@ public:
         paTestData(Synth* s) : m_synth{s} {
         }
         Voice* addNoteOn(int key) {
+            bool found = false;
+            for(auto& v: m_voices) {
+                if(v.m_gate)
+                    found = true;
+            }
+            if(found)
+                return nullptr;
+
             m_voices[nextVoiceIndex].m_key = key;
             m_voices[nextVoiceIndex].m_oscI.setOffset(key);
             m_voices[nextVoiceIndex].m_oscII.setOffset(key);
@@ -167,6 +196,10 @@ public:
     void setLFOIncI(int inc);
 
     void setLFOIncII(int inc);
+
+    void setAttack(int attackms);
+
+    void setRelease(int releasems);
 
 protected:
     PaStream *m_stream;

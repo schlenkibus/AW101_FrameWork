@@ -63,6 +63,14 @@ void ClickHandler::onData(seasocks::WebSocket *, const char *data) {
             auto id = UIID{idStr};
             auto value = recieved.substr(valuepos + 10);
             m_manager->onValueChanged(id, std::stoi(value));
+        } else if (commandStr == "keyup") {
+            auto keypos = recieved.find("keyup");
+            auto key = recieved.substr(keypos + 5);
+            m_manager->onKeyUp(key);
+        } else if (commandStr == "keydown") {
+            auto keypos = recieved.find("keydown");
+            auto key = recieved.substr(keypos + 7);
+            m_manager->onKeyDown(key);
         }
     }
 }

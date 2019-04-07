@@ -24,6 +24,20 @@ TestLayout::TestLayout(TestModel *model) : m_model{model} {
         m_model->m_synth.setIncII(s->getValue());
     }));
 
+    m_root.addChild(std::make_unique<Label>(this, "Attack Time (ms)"));
+    auto attackID = m_root.addChild(std::make_unique<Label>(this, "0"))->getID().id;
+    m_root.addChild(std::make_unique<Slider>(this, 1, 1, 2500, [this, &model, attackID](Slider* s) {
+        dynamic_cast<Label*>(m_root.getControlById(attackID))->setText(std::to_string(s->getValue()));
+        m_model->m_synth.setAttack(s->getValue());
+    }));
+
+    m_root.addChild(std::make_unique<Label>(this, "Release Time (ms)"));
+    auto releaseID = m_root.addChild(std::make_unique<Label>(this, "0"))->getID().id;
+    m_root.addChild(std::make_unique<Slider>(this, 1, 1, 2500, [this, &model, releaseID](Slider* s) {
+        dynamic_cast<Label*>(m_root.getControlById(releaseID))->setText(std::to_string(s->getValue()));
+        m_model->m_synth.setRelease(s->getValue());
+    }));
+
     m_root.addChild(std::make_unique<Label>(this, "Lowpass Cutoff"));
     auto cutoffId = m_root.addChild(std::make_unique<Label>(this, "0.025"))->getID().id;
     m_root.addChild(std::make_unique<Slider>(this, 25, 1, 10000, [this, &model, cutoffId](Slider* s) {

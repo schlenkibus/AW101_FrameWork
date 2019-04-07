@@ -71,6 +71,18 @@ void Synth::setLFOIncII(int inc) {
     }
 }
 
+void Synth::setAttack(int attackms) {
+    for(auto& v: m_data.m_voices) {
+        v.m_ampEnv.setAttack(std::chrono::milliseconds{attackms});
+    }
+}
+
+void Synth::setRelease(int releasems) {
+    for(auto&v:m_data.m_voices) {
+        v.m_ampEnv.setDecay(std::chrono::milliseconds{releasems});
+    }
+}
+
 
 Synth::Voice::Voice(int key) : m_ampEnv{std::chrono::seconds{1}}, m_filter{25} {
     m_key = key;
@@ -84,9 +96,11 @@ float Synth::Voice::doDsp(int posInFrame) {
 }
 
 void Synth::Voice::noteOn() {
+    m_gate = true;
     m_ampEnv.noteOn();
 }
 
 void Synth::Voice::noteOff() {
     m_ampEnv.noteOff();
+    m_gate = false;
 }

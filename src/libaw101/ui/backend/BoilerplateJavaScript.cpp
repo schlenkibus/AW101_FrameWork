@@ -11,11 +11,31 @@ const std::string BoilerplateJavaScript::getScriptContent() const {
             "var payload = text.substring(dataentry+4);"\
             "updateNode(id, payload);"
             "};"\
+            "var body;"
+            "async function onLoad() {"\
+            "await Sleep(100);"\
+            "body = document.body;"\
+            "body.onkeydown = function(e) {"\
+            "keydown(onKeyEvent(e));"\
+            "};"\
+            "body.onkeyup = function(e) {"\
+            "keyup(onKeyEvent(e));"\
+            "};"\
+            "}"\
+            "function onKeyEvent(event) {"\
+            "return event.key;"\
+            "}"\
             "function uiclick(id) {"\
             "onClickWS.send('event4down'+id);"\
             "}"\
             "function uirelease(id) {"\
             "onClickWS.send('event2up'+id);"\
+            "}"\
+            "function keyup(key) {"\
+            "onClickWS.send('event5keyup'+key)"\
+            "}"\
+            "function keydown(key) {"\
+            "onClickWS.send('event7keydown'+key)"\
             "}"\
             "function valuechange(id,value) {"\
             "onClickWS.send('event7changed'+id+'value'+value)"\
@@ -30,5 +50,10 @@ const std::string BoilerplateJavaScript::getScriptContent() const {
             "var toChange = document.getElementById(id);"\
             "var parent = toChange.parentElement;"\
             "parent.replaceChild(htmlToElement(content), toChange);"\
-            "}";
+            "}"\
+            "function Sleep(milliseconds) {"\
+            " return new Promise(resolve => setTimeout(resolve, milliseconds));"\
+            "}"\
+            "Sleep(100);"\
+            "onLoad();";
 }

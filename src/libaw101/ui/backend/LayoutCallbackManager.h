@@ -2,6 +2,7 @@
 #include <vector>
 #include "../HighLevel/Button.h"
 #include "OnClickCallbackServer.h"
+#include "KeyEventTarget.h"
 
 class Slider;
 
@@ -10,15 +11,20 @@ public:
     LayoutCallbackManager();
     void addButtonCallback(Button* button);
     void addSlider(Slider* slider);
+    void addKeyEventTarget(KeyEventTarget* target);
     void onClickReceived(const UIID &id);
     void onValueChanged(const UIID& id, int value);
     void updateNode(Control *control);
 
     void onReleaseReceived(UIID uiid);
 
+    void onKeyDown(std::string key);
+    void onKeyUp(std::string key);
+
 protected:
     std::vector<Button*> m_buttons;
     std::vector<Slider*> m_sliders;
+    std::vector<KeyEventTarget*> m_keyEventTargets;
     OnClickCallbackServer m_clickServer;
 };
 
