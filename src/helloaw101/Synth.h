@@ -62,7 +62,7 @@ public:
         }
         void noteOff() {
             m_state = Decay;
-            m_currentPhaseInNote = m_decayInPhases;
+            m_currentPhaseInNote = m_decayInPhases + 1;
         }
 
         float getAmp(int phase) {
@@ -75,9 +75,13 @@ public:
             if(phase != lastPhase) {
                 switch(m_state) {
                     case Attack:
+                        if(m_currentPhaseInNote >= m_attackInPhases)
+                            m_state = Sustain;
                         m_currentPhaseInNote++;
                         break;
                     case Decay:
+                        if(m_currentPhaseInNote <= 0)
+                            m_state = None;
                         m_currentPhaseInNote--;
                         break;
                 }
@@ -85,15 +89,11 @@ public:
             }
 
             if(m_state == Attack) {
-                if(m_currentPhaseInNote >= m_attackInPhases)
-                    m_state = Sustain;
                 return (float)m_currentPhaseInNote / (float)m_attackInPhases;
             } else if(m_state == Decay) {
-                if(m_currentPhaseInNote <= 0)
-                    m_state = None;
                 return (float)m_currentPhaseInNote / (float)m_decayInPhases;
             }
-
+            return 0;
         }
     protected:
         State m_state;
