@@ -4,66 +4,39 @@
 #include "../libaw101/ui/HighLevel/ReleaseButton.h"
 #include "../libaw101/ui/HighLevel/Slider.h"
 #include "ui/Piano.h"
+#include "ui/Parameter.h"
 
 TestLayout::TestLayout(TestModel *model) : m_model{model} {
 
-    m_root.addChild(std::make_unique<Piano>(this, m_model));
+    m_root.addChild<Piano>(this, m_model);
 
-
-    m_root.addChild(std::make_unique<Label>(this, "OSC I Tune"));
-    auto phaseIncI = m_root.addChild(std::make_unique<Label>(this, "0"))->getID().id;
-    m_root.addChild(std::make_unique<Slider>(this, 1, 1, 500, [this, &model, phaseIncI](Slider* s) {
-        dynamic_cast<Label*>(m_root.getControlById(phaseIncI))->setText(std::to_string(s->getValue()));
-        m_model->m_synth.setIncI(s->getValue());
-    }));
-
-    m_root.addChild(std::make_unique<Label>(this, "OSC II Tune"));
-    auto phaseIncII = m_root.addChild(std::make_unique<Label>(this, "0"))->getID().id;
-    m_root.addChild(std::make_unique<Slider>(this, 1, 1, 500, [this, &model, phaseIncII](Slider* s) {
-        dynamic_cast<Label*>(m_root.getControlById(phaseIncII))->setText(std::to_string(s->getValue()));
-        m_model->m_synth.setIncII(s->getValue());
-    }));
-
-    m_root.addChild(std::make_unique<Label>(this, "Attack Time (ms)"));
-    auto attackID = m_root.addChild(std::make_unique<Label>(this, "0"))->getID().id;
-    m_root.addChild(std::make_unique<Slider>(this, 1, 1, 2500, [this, &model, attackID](Slider* s) {
-        dynamic_cast<Label*>(m_root.getControlById(attackID))->setText(std::to_string(s->getValue()));
-        m_model->m_synth.setAttack(s->getValue());
-    }));
-
-    m_root.addChild(std::make_unique<Label>(this, "Release Time (ms)"));
-    auto releaseID = m_root.addChild(std::make_unique<Label>(this, "0"))->getID().id;
-    m_root.addChild(std::make_unique<Slider>(this, 1, 1, 2500, [this, &model, releaseID](Slider* s) {
-        dynamic_cast<Label*>(m_root.getControlById(releaseID))->setText(std::to_string(s->getValue()));
-        m_model->m_synth.setRelease(s->getValue());
-    }));
-
-    m_root.addChild(std::make_unique<Label>(this, "Lowpass Cutoff"));
-    auto cutoffId = m_root.addChild(std::make_unique<Label>(this, "0.025"))->getID().id;
-    m_root.addChild(std::make_unique<Slider>(this, 25, 1, 10000, [this, &model, cutoffId](Slider* s) {
-        auto label = dynamic_cast<Label*>(m_root.getControlById(cutoffId));
-        auto val = s->getValue() / 100000.0f;
-        label->setText(std::to_string(val));
-        m_model->m_synth.setCutoffFrequency(val);
-    }));
-
-    m_root.addChild(std::make_unique<Label>(this, "LFO I Phase Inc"));
-    auto lfoID = m_root.addChild(std::make_unique<Label>(this, "1"))->getID().id;
-    m_root.addChild(std::make_unique<Slider>(this, 1, 1, 1000, [this, &model, lfoID](Slider* s) {
-        auto label = dynamic_cast<Label*>(m_root.getControlById(lfoID));
-        auto val = s->getValue();
-        label->setText(std::to_string(val));
-        m_model->m_synth.setLFOIncI(val);
-    }));
-
-    m_root.addChild(std::make_unique<Label>(this, "LFO II Phase Inc"));
-    auto lfoID2 = m_root.addChild(std::make_unique<Label>(this, "1"))->getID().id;
-    m_root.addChild(std::make_unique<Slider>(this, 1, 1, 1000, [this, &model, lfoID2](Slider* s) {
-        auto label = dynamic_cast<Label*>(m_root.getControlById(lfoID2));
-        auto val = s->getValue();
-        label->setText(std::to_string(val));
-        m_model->m_synth.setLFOIncII(val);
-    }));
+    m_root.addChild<Parameter>(this, "OSC I Tune (st)", Parameter::SliderPack{1, 1, 8200}, [this](int value) {
+        m_model->m_synth.setIncI(value);
+    });
+    m_root.addChild<Parameter>(this, "OSC II Tune (st)", Parameter::SliderPack{1, 1, 82}, [this](int value) {
+        m_model->m_synth.setIncII(value);
+    });
+    m_root.addChild<Parameter>(this, "Envelope Attack Time (ms)", Parameter::SliderPack{250, 0, 5000}, [this](int value) {
+        m_model->m_synth.setAttack(value);
+    });
+    m_root.addChild<Parameter>(this, "Envelope Release Time (ms)", Parameter::SliderPack{250, 0, 5000}, [this](int value) {
+        m_model->m_synth.setRelease(value);
+    });
+    m_root.addChild<Parameter>(this, "Cutoff (?)", Parameter::SliderPack{2500, 0, 5000}, [this](int value) {
+        m_model->m_synth.setCutoffFrequency(value);
+    });
+    m_root.addChild<Parameter>(this, "LFO Tune (st)", Parameter::SliderPack{1, 1, 128}, [this](int value) {
+        m_model->m_synth.setLFOIncI(value);
+    });
+    m_root.addChild<Parameter>(this, "LFO Tune (st)", Parameter::SliderPack{1, 1, 128}, [this](int value) {
+        m_model->m_synth.setLFOIncII(value);
+    });
+    m_root.addChild<Parameter>(this, "LFO I Factor (%)", Parameter::SliderPack{0, 0, 100}, [this](int value) {
+        m_model->m_synth.setLFOIFactor(value);
+    });
+    m_root.addChild<Parameter>(this, "LFO II Factor (%)", Parameter::SliderPack{0, 0, 100}, [this](int value) {
+        m_model->m_synth.setLFOIIFactor(value);
+    });
 }
 
 void TestLayout::loop() {

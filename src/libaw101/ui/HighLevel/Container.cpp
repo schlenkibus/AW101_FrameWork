@@ -5,6 +5,8 @@ Container::Container(AW101Layout *parent) : Control(parent) {
     computeNode();
 };
 
+
+
 std::vector<std::unique_ptr<Control>> & Container::getChildren() {
     return m_children;
 }
@@ -17,13 +19,5 @@ void Container::computeNode() {
         child->computeNode();
         m_node.AppendChild(child->getNode());
     }
-}
-
-Control *Container::getControlById(const std::string &id) {
-    for(auto& c: m_children) {
-        if(c->getID().id == id)
-            return c.get();
-    }
-    return nullptr;
 }
 

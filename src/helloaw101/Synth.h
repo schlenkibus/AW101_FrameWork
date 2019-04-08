@@ -3,6 +3,7 @@
 #include <array>
 #include <cmath>
 #include <chrono>
+#include <iostream>
 #include "portaudio.h"
 #include "audio_foo/Oscillator.h"
 #include "audio_foo/LowPassFilter.h"
@@ -107,15 +108,16 @@ public:
     public:
         Voice(int key = 0);
         float doDsp(int posInFrame);
-        Oscillator<SineWaveTable<10000>> m_oscI;
-        Oscillator<SineWaveTable<10000>> m_oscII;
-        Oscillator<SineWaveTable<40000>> m_lfoI;
-        Oscillator<SineWaveTable<40000>> m_lfoII;
+        Oscillator<SineWaveTable<32768>> m_oscI;
+        Oscillator<SineWaveTable<32768>> m_oscII;
+        Oscillator<SineWaveTable<131072>> m_lfoI;
+        Oscillator<SineWaveTable<131072>> m_lfoII;
         Envelope m_ampEnv;
         LowPassFilter m_filter;
         int m_key;
         bool m_gate;
-
+        float m_lfoIFactor;
+        float m_lfoIIFactor;
         void noteOn();
         void noteOff();
     };
@@ -133,22 +135,17 @@ public:
         paTestData(Synth* s) : m_synth{s} {
         }
         Voice* addNoteOn(int key) {
-            bool found = false;
-            for(auto& v: m_voices) {
-                if(v.m_gate)
-                    found = true;
-            }
-            if(found)
-                return nullptr;
-
+            std::cerr << "trying to allocate voice for " << key << '\n';
             m_voices[nextVoiceIndex].m_key = key;
             m_voices[nextVoiceIndex].m_oscI.setOffset(key);
             m_voices[nextVoiceIndex].m_oscII.setOffset(key);
             auto ret = &m_voices[nextVoiceIndex];
             nextVoiceIndex++;
-            if(nextVoiceIndex >= 4)
+            if(nextVoiceIndex >= 4) {
                 nextVoiceIndex = 0;
+            }
             ret->noteOn();
+            std::cerr << "allocated voice for " << key << '\n';
             return ret;
         }
         std::array<Voice, 4> m_voices;
@@ -200,6 +197,10 @@ public:
     void setAttack(int attackms);
 
     void setRelease(int releasems);
+
+    void setLFOIFactor(int factor);
+
+    void setLFOIIFactor(int i);
 
 protected:
     PaStream *m_stream;

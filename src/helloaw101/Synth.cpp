@@ -83,24 +83,38 @@ void Synth::setRelease(int releasems) {
     }
 }
 
+void Synth::setLFOIFactor(int factor) {
+    for(auto&v:m_data.m_voices) {
+        v.m_lfoIFactor = factor / 100.f;
+    }
+}
+
+void Synth::setLFOIIFactor(int i) {
+    for(auto&v:m_data.m_voices) {
+        v.m_lfoIIFactor = i / 100.f;
+    }
+}
+
 
 Synth::Voice::Voice(int key) : m_ampEnv{std::chrono::seconds{1}}, m_filter{25} {
     m_key = key;
+    m_lfoIFactor = 0.0f;
+    m_lfoIIFactor = 0.0f;
 }
 
 float Synth::Voice::doDsp(int posInFrame) {
-    auto I = m_lfoI.get(posInFrame) * m_oscI.get(posInFrame);
-    auto II = m_lfoII.get(posInFrame) * m_oscII.get(posInFrame);
-    auto combined = I + II;
-    return m_ampEnv.getAmp(posInFrame) * m_filter.filter(combined, posInFrame);
+    
+    return m_ampEnv.getAmp(posInFrame) * m_oscI.get(posInFrame);
 }
 
 void Synth::Voice::noteOn() {
     m_gate = true;
     m_ampEnv.noteOn();
+    std::cerr << "note " << m_key << " on\n";
 }
 
 void Synth::Voice::noteOff() {
     m_ampEnv.noteOff();
     m_gate = false;
+    std::cerr << "note " << m_key << " off\n";
 }

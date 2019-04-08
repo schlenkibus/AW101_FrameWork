@@ -9,7 +9,7 @@ Piano::Piano(TestLayout *tl, TestModel *model)
     , m_nextVoiceIndex{0}
 {
     m_parent->getCallbackManager()->addKeyEventTarget(this);
-    addChild(std::make_unique<Label>(tl, "Piano"));
+    addChild<Label>(tl, "Hello Piano<br> Controls:<br> keys 0 - 9 start a voice with respective semitone");
 }
 
 void Piano::computeNode() {
@@ -28,6 +28,7 @@ void Piano::onRelease(int key) {
 }
 
 void Piano::onKeyDown(const std::string &key) {
+    std::cerr << key << std::endl;
     try {
         onDown(std::stoi(key));
     } catch(...) {
