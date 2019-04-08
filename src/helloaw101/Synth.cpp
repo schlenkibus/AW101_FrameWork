@@ -95,6 +95,17 @@ void Synth::setLFOIIFactor(int i) {
     }
 }
 
+void Synth::setOSCIFeedback(int feedbackPercent) {
+    for(auto&v:m_data.m_voices) {
+        v.m_feedback.m_oscIFactor = feedbackPercent / 100.f;
+    }
+}
+
+void Synth::setOSCIIFeedback(int feedbackPercent) {
+    for(auto&v:m_data.m_voices) {
+        v.m_feedback.m_oscIIFactor = feedbackPercent / 100.f;
+    }
+}
 
 Synth::Voice::Voice(int key) : m_ampEnv{std::chrono::seconds{1}}, m_filter{25} {
     m_key = key;
@@ -103,8 +114,12 @@ Synth::Voice::Voice(int key) : m_ampEnv{std::chrono::seconds{1}}, m_filter{25} {
 }
 
 float Synth::Voice::doDsp(int posInFrame) {
-    
-    return m_ampEnv.getAmp(posInFrame) * m_oscI.get(posInFrame);
+    const auto signalI = m_oscI.get(posInFrame) + m_feedback.m_oscI;
+    const auto signalII = m_oscII.get(posInFrame) + m_feedback.m_oscII;
+    m_feedback.m_oscI = m_feedback.m_oscIFactor * signalI;
+    m_feedback.m_oscII = m_feedback.m_oscIIFactor * signalII;
+    const auto combined = (signalI + signalII) / 2.f;
+    return m_ampEnv.getAmp(posInFrame) * combined;
 }
 
 void Synth::Voice::noteOn() {

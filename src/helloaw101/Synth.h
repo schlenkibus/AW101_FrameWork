@@ -120,6 +120,15 @@ public:
         float m_lfoIIFactor;
         void noteOn();
         void noteOff();
+
+        struct FeedBack {
+            float m_oscI = 0.0f;
+            float m_oscII = 0.0f;
+            float m_oscIFactor = 0.0f;
+            float m_oscIIFactor = 0.0f;
+        };
+
+        FeedBack m_feedback;
     };
 
     struct paTestData
@@ -181,27 +190,18 @@ public:
     paTestData m_data;
 
     void setIncI(int inc);
-
     void setOffsetI(int offset);
-
     void setIncII(int inc);
-
     void setOffsetII(int offset);
-
     void setCutoffFrequency(float cutoff);
-
     void setLFOIncI(int inc);
-
     void setLFOIncII(int inc);
-
     void setAttack(int attackms);
-
     void setRelease(int releasems);
-
     void setLFOIFactor(int factor);
-
     void setLFOIIFactor(int i);
-
+    void setOSCIFeedback(int feedbackPercent);
+    void setOSCIIFeedback(int feedbackPercent);
 protected:
     PaStream *m_stream;
 };

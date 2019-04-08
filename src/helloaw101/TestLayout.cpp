@@ -37,6 +37,13 @@ TestLayout::TestLayout(TestModel *model) : m_model{model} {
     m_root.addChild<Parameter>(this, "LFO II Factor (%)", Parameter::SliderPack{0, 0, 100}, [this](int value) {
         m_model->m_synth.setLFOIIFactor(value);
     });
+    m_root.addChild<Parameter>(this, "OSC I Feedback (%)", Parameter::SliderPack{1, 0, 100}, [this](int value) {
+        m_model->m_synth.setOSCIFeedback(value);
+    });
+    m_root.addChild<Parameter>(this, "OSC II Feedback (%)", Parameter::SliderPack{1, 0, 100}, [this](int value) {
+        m_model->m_synth.setOSCIIFeedback(value);
+    });
+
 }
 
 void TestLayout::loop() {
