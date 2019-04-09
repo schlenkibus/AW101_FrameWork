@@ -113,18 +113,18 @@ Synth::Voice::Voice(int key) : m_ampEnv{std::chrono::seconds{1}}, m_filter{25} {
     m_lfoIIFactor = 0.0f;
 }
 
+auto lastgate = false;
 float Synth::Voice::doDsp(int posInFrame) {
-    const auto signalI = m_oscI.get(posInFrame) + m_feedback.m_oscI;
-    const auto signalII = m_oscII.get(posInFrame) + m_feedback.m_oscII;
-    m_feedback.m_oscI = m_feedback.m_oscIFactor * signalI;
-    m_feedback.m_oscII = m_feedback.m_oscIIFactor * signalII;
-    const auto combined = (signalI + signalII) / 2.f;
-    return m_ampEnv.getAmp(posInFrame) * combined;
+    if(lastgate != m_gate)
+        m_oscI.resetPhase();
+    lastgate = m_gate;
+    return m_gate ? m_oscI.get(posInFrame) : 0;
 }
 
 void Synth::Voice::noteOn() {
     m_gate = true;
     m_ampEnv.noteOn();
+    m_oscI.resetPhase();
     std::cerr << "note " << m_key << " on\n";
 }
 

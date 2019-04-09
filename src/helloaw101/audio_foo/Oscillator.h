@@ -14,15 +14,35 @@ public:
     void setInc(int phaseInc) {
         m_phaseInc = phaseInc;
     }
+
+    void resetPhase() {
+        m_phase = 0;
+    }
+
     float get(int posInFrame) {
         if(posInFrame != lastPosInFrame) {
             lastPosInFrame = posInFrame;
-            m_phase += m_phaseInc + m_offset;
-            if(m_phase >= m_data.getSize()) {
-                m_phase = 0;
+
+            float ret = 0.0;
+
+            auto toScan = m_phaseInc + m_offset;
+            auto pos = m_phase;
+            while(toScan != 0) {
+
+                if(pos >= m_data.getSize())
+                    pos = 0;
+
+                ret += m_data.get(pos);
+
+                pos++;
+                toScan--;
             }
+            m_phase = pos;
+
+            m_cached = ret / (float)(m_phaseInc + m_offset);
         }
-        return m_data.get(m_phase);
+
+        return m_cached;
     }
 
     void setOffset(int i) {
@@ -33,6 +53,8 @@ protected:
     int m_phaseInc;
     int m_phase;
     int m_offset;
+
+    float m_cached;
     T m_data;
 };
 

@@ -61,3 +61,7 @@ void LayoutCallbackManager::onKeyUp(std::string key) {
 void LayoutCallbackManager::addKeyEventTarget(KeyEventTarget* target) {
     m_keyEventTargets.emplace_back(target);
 }
+
+void LayoutCallbackManager::eval(const std::string javascript) {
+    m_clickServer.eval(javascript);
+}

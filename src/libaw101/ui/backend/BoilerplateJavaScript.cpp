@@ -6,10 +6,16 @@ const std::string BoilerplateJavaScript::getScriptContent() const {
             "onClickWS.onmessage = function(event) {"\
             "console.log(event);"\
             "var text = event.data;"\
-            "var dataentry = text.indexOf('DATA');"\
-            "var id = text.substring(0,dataentry);"\
-            "var payload = text.substring(dataentry+4);"\
-            "updateNode(id, payload);"
+            "if(text.startsWith('EVAL:')) {"\
+                "var js = text.substring(5);"\
+                "eval(js);"\
+            "}"\
+            "else {"\
+                "var dataentry = text.indexOf('DATA');"\
+                "var id = text.substring(0,dataentry);"\
+                "var payload = text.substring(dataentry+4);"\
+                "updateNode(id, payload);"
+            "}"\
             "};"\
             "var body;"
             "async function onLoad() {"\

@@ -21,6 +21,8 @@ public:
     void onKeyDown(std::string key);
     void onKeyUp(std::string key);
 
+    void eval(const std::string javascript);
+
 protected:
     std::vector<Button*> m_buttons;
     std::vector<Slider*> m_sliders;

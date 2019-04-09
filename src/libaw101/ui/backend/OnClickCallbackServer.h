@@ -42,6 +42,8 @@ public:
     void updateNode(Control *pControl);
     seasocks::Server* getServer();
 
+    void eval(const std::string javascript);
+
 protected:
     LayoutCallbackManager* m_manager;
     seasocks::Server m_server;

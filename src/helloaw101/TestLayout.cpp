@@ -4,6 +4,7 @@
 #include "../libaw101/ui/HighLevel/ReleaseButton.h"
 #include "../libaw101/ui/HighLevel/Slider.h"
 #include "ui/Piano.h"
+#include "ui/BarGraph.h"
 #include "ui/Parameter.h"
 
 TestLayout::TestLayout(TestModel *model) : m_model{model} {
@@ -44,8 +45,14 @@ TestLayout::TestLayout(TestModel *model) : m_model{model} {
         m_model->m_synth.setOSCIIFeedback(value);
     });
 
+    m_audioInfo = m_root.addChild<Label>(this, "Audio Info");
+
+    m_graph = m_root.addChild<BarGraph>(this, m_model);
+
 }
 
 void TestLayout::loop() {
-        std::this_thread::sleep_for(std::chrono::seconds(1));
+    m_audioInfo->setText(std::to_string(m_model->m_synth.m_data.m_avgFrameLength.calculateAverageMS()));
+    std::this_thread::sleep_for(std::chrono::milliseconds(250));
+    m_graph->redraw();
 }

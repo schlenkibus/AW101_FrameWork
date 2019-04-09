@@ -7,6 +7,8 @@
 #include "portaudio.h"
 #include "audio_foo/Oscillator.h"
 #include "audio_foo/LowPassFilter.h"
+#include "foo/Average.h"
+#include "foo/RingBuffer.h"
 
 class Synth {
 public:
@@ -108,9 +110,9 @@ public:
     public:
         Voice(int key = 0);
         float doDsp(int posInFrame);
-        Oscillator<SineWaveTable<32768>> m_oscI;
+        Oscillator<SineWaveTable<16384>> m_oscI;
         Oscillator<SineWaveTable<32768>> m_oscII;
-        Oscillator<SineWaveTable<131072>> m_lfoI;
+        Oscillator<SineWaveTable<8192>> m_lfoI;
         Oscillator<SineWaveTable<131072>> m_lfoII;
         Envelope m_ampEnv;
         LowPassFilter m_filter;
@@ -150,15 +152,17 @@ public:
             m_voices[nextVoiceIndex].m_oscII.setOffset(key);
             auto ret = &m_voices[nextVoiceIndex];
             nextVoiceIndex++;
-            if(nextVoiceIndex >= 4) {
+            if(nextVoiceIndex >= 1) {
                 nextVoiceIndex = 0;
             }
             ret->noteOn();
             std::cerr << "allocated voice for " << key << '\n';
             return ret;
         }
-        std::array<Voice, 4> m_voices;
+        std::array<Voice, 1> m_voices;
         Synth* m_synth;
+        RingBuffer<2000, float> m_samples;
+        Average<200, float> m_avgFrameLength;
     protected:
         int nextVoiceIndex = 0;
     };
@@ -178,7 +182,7 @@ public:
 
         for( i=0; i<framesPerBuffer; i++ )
         {
-            *out++ = data->m_synth->doDsp(i);
+            *out++ = data->m_samples.put(data->m_synth->doDsp(i));
             *out++ = data->m_synth->doDsp(i);
         }
         return 0;

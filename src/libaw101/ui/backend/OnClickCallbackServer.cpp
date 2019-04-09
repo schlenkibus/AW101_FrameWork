@@ -36,6 +36,10 @@ seasocks::Server *OnClickCallbackServer::getServer() {
     return &m_server;
 }
 
+void OnClickCallbackServer::eval(const std::string javascript) {
+    m_webSocketHandler->sendToClients("EVAL:"+javascript);
+}
+
 void ClickHandler::onData(seasocks::WebSocket *, const char *data) {
     std::string recieved{data};
     if(recieved.find("event") == 0) {
