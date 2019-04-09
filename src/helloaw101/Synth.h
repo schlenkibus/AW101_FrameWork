@@ -161,7 +161,7 @@ public:
         }
         std::array<Voice, 1> m_voices;
         Synth* m_synth;
-        RingBuffer<2000, float> m_samples;
+        RingBuffer<5000, float> m_samples;
         Average<200, float> m_avgFrameLength;
     protected:
         int nextVoiceIndex = 0;

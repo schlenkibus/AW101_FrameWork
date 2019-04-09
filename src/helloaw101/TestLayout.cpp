@@ -11,7 +11,7 @@ TestLayout::TestLayout(TestModel *model) : m_model{model} {
 
     m_root.addChild<Piano>(this, m_model);
 
-    m_root.addChild<Parameter>(this, "OSC I Tune (st)", Parameter::SliderPack{1, 1, 8200}, [this](int value) {
+    m_root.addChild<Parameter>(this, "OSC I Tune (st)", Parameter::SliderPack{10, 1, 128}, [this](int value) {
         m_model->m_synth.setIncI(value);
     });
     m_root.addChild<Parameter>(this, "OSC II Tune (st)", Parameter::SliderPack{1, 1, 82}, [this](int value) {

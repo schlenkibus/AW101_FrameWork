@@ -22,7 +22,7 @@ public:
                     ret += "ctx.beginPath();";
                     ret += "ctx.moveTo(0, 50);";
                     for(auto& bar: m_model->m_synth.m_data.m_samples.m_data) {
-                        ret += "ctx.lineTo(" + std::to_string(i++) + ", " + std::to_string(50 + 50 * bar) + ");";
+                        ret += "ctx.lineTo(" + std::to_string(i++/10.f) + ", " + std::to_string(50 + 50 * bar) + ");";
                     }
                     ret += "ctx.stroke();";
                     return ret;
@@ -40,7 +40,7 @@ void BarGraph::computeNode() {
     clear();
     m_node.SetName("canvas.Canvas#"+m_id.id);
     m_node.SetAttribute("heigth", "100px");
-    m_node.SetAttribute("width", "250px");
+    m_node.SetAttribute("width", "500px");
 }
 
 void BarGraph::redraw() {
