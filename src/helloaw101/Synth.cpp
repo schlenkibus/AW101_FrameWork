@@ -107,6 +107,10 @@ void Synth::setOSCIIFeedback(int feedbackPercent) {
     }
 }
 
+Synth::Voice *Synth::getVoice(int index) {
+    return &m_data.m_voices[index];
+}
+
 Synth::Voice::Voice(int key) : m_ampEnv{std::chrono::seconds{1}}, m_filter{25} {
     m_key = key;
     m_lfoIFactor = 0.0f;
@@ -114,22 +118,30 @@ Synth::Voice::Voice(int key) : m_ampEnv{std::chrono::seconds{1}}, m_filter{25} {
 }
 
 auto lastgate = false;
+
 float Synth::Voice::doDsp(int posInFrame) {
-    if(lastgate != m_gate)
-        m_oscI.resetPhase();
-    lastgate = m_gate;
-    return m_gate ? m_oscI.get(posInFrame) : 0;
+    //if(lastgate != m_gate && lastgate == true)
+    //    m_oscI.resetPhase();
+    //lastgate = m_gate;
+
+    auto fbI = m_feedback.m_oscIFactor * m_feedback.m_oscI;
+    auto I = m_oscI.get(posInFrame) + fbI;
+    m_feedback.m_oscI = I;
+    auto fbII = m_feedback.m_oscIIFactor * m_feedback.m_oscII;
+    auto II = m_oscII.get(posInFrame) + fbII;
+    m_feedback.m_oscII = II;
+    auto combined = (I + II) * 0.5;
+    //auto filtered = m_filter.filter(combined, posInFrame);
+    return m_ampEnv.getAmp(posInFrame) * combined;
 }
 
 void Synth::Voice::noteOn() {
     m_gate = true;
     m_ampEnv.noteOn();
     m_oscI.resetPhase();
-    std::cerr << "note " << m_key << " on\n";
 }
 
 void Synth::Voice::noteOff() {
     m_ampEnv.noteOff();
     m_gate = false;
-    std::cerr << "note " << m_key << " off\n";
 }

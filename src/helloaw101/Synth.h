@@ -16,22 +16,11 @@ public:
     struct SineWaveTable {
     public:
         SineWaveTable() {
-            for(auto i = 0; i < size; i++) {
-                m_data[i] = (float) std::sin( ((double)i/(double)size) * M_PI * 2. );
-            }
-        }
-        constexpr const int getSize() const { return size; }
-        inline const float get(int i) const { return m_data[i]; }
-    protected:
-        std::array<float, size> m_data;
-    };
-
-    template<int size>
-    struct SawWaveTable {
-    public:
-        SawWaveTable() {
-            for(auto i = 0; i < size; i++) {
-                m_data[i] = ((1.0f / size) * i);
+            double angle = 0.0;
+            for (int i = 0; i < size; i++)
+            {
+                m_data[i] = float(std::sin(angle));
+                angle += (2 * M_PI) / size;
             }
         }
         constexpr const int getSize() const { return size; }
@@ -110,10 +99,11 @@ public:
     public:
         Voice(int key = 0);
         float doDsp(int posInFrame);
-        Oscillator<SineWaveTable<16384>> m_oscI;
-        Oscillator<SineWaveTable<32768>> m_oscII;
+        Oscillator<SineWaveTable<8192>> m_oscI;
+        Oscillator<SineWaveTable<8192>> m_oscII;
         Oscillator<SineWaveTable<8192>> m_lfoI;
         Oscillator<SineWaveTable<131072>> m_lfoII;
+        Average<2000, float> m_avgI;
         Envelope m_ampEnv;
         LowPassFilter m_filter;
         int m_key;
@@ -145,8 +135,14 @@ public:
     public:
         paTestData(Synth* s) : m_synth{s} {
         }
+        bool hasNoteForKey(int key) {
+            for(auto& v: m_voices) {
+                if(key == v.m_key && v.m_gate )
+                    return true;
+            }
+            return false;
+        }
         Voice* addNoteOn(int key) {
-            std::cerr << "trying to allocate voice for " << key << '\n';
             m_voices[nextVoiceIndex].m_key = key;
             m_voices[nextVoiceIndex].m_oscI.setOffset(key);
             m_voices[nextVoiceIndex].m_oscII.setOffset(key);
@@ -156,7 +152,6 @@ public:
                 nextVoiceIndex = 0;
             }
             ret->noteOn();
-            std::cerr << "allocated voice for " << key << '\n';
             return ret;
         }
         std::array<Voice, 1> m_voices;
@@ -206,6 +201,7 @@ public:
     void setLFOIIFactor(int i);
     void setOSCIFeedback(int feedbackPercent);
     void setOSCIIFeedback(int feedbackPercent);
+    Voice* getVoice(int index);
 protected:
     PaStream *m_stream;
 };

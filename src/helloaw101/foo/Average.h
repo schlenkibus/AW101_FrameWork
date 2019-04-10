@@ -18,7 +18,7 @@ struct Average {
         m_data.at(index) = t;
         index++;
     }
-    T calculateAverageMS() {
+    T calculateAverage() {
         return std::accumulate(m_data.begin(), m_data.end(), 0) / m_data.size();
     }
     int index;
