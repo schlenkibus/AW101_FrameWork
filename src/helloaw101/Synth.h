@@ -4,6 +4,7 @@
 #include <cmath>
 #include <chrono>
 #include <iostream>
+#include <thread>
 #include "portaudio.h"
 #include "audio_foo/Oscillator.h"
 #include "audio_foo/LowPassFilter.h"
@@ -148,13 +149,13 @@ public:
             m_voices[nextVoiceIndex].m_oscII.setOffset(key);
             auto ret = &m_voices[nextVoiceIndex];
             nextVoiceIndex++;
-            if(nextVoiceIndex >= 1) {
+            if(nextVoiceIndex >= m_voices.size()) {
                 nextVoiceIndex = 0;
             }
             ret->noteOn();
             return ret;
         }
-        std::array<Voice, 1> m_voices;
+        std::array<Voice, 4> m_voices;
         Synth* m_synth;
         RingBuffer<5000, float> m_samples;
         Average<200, float> m_avgFrameLength;
@@ -202,7 +203,11 @@ public:
     void setOSCIFeedback(int feedbackPercent);
     void setOSCIIFeedback(int feedbackPercent);
     Voice* getVoice(int index);
+
+    void playSequence();
+
 protected:
+    std::thread m_sequenceThread;
     PaStream *m_stream;
 };
 

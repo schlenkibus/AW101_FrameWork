@@ -4,15 +4,9 @@
 
 #include "ReleaseButton.h"
 
-ReleaseButton::ReleaseButton(AW101Layout *parent, Button::tButtonCallback downCB, Button::tButtonCallback upCB)
-    : Button(parent, std::move(downCB))
-    , m_reaseCallback{std::move(upCB)}
+ReleaseButton::ReleaseButton(AW101Layout *parent)
+    : Button(parent)
 {
-
-}
-
-void ReleaseButton::onRelease() {
-    m_reaseCallback(this);
 }
 
 void ReleaseButton::computeNode() {

@@ -6,6 +6,7 @@
 #include "ui/Piano.h"
 #include "ui/BarGraph.h"
 #include "ui/Parameter.h"
+#include "ui/PlaytestSequenceButton.h"
 
 TestLayout::TestLayout(TestModel *model) : m_model{model} {
 
@@ -45,6 +46,7 @@ TestLayout::TestLayout(TestModel *model) : m_model{model} {
         m_model->m_synth.setOSCIIFeedback(value);
     });
 
+    m_root.addChild<PlaytestSequenceButton>(this, m_model);
     m_audioInfo = m_root.addChild<Label>(this, "Audio Info");
     m_graph = m_root.addChild<BarGraph>(this, m_model);
 

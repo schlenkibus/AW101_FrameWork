@@ -3,13 +3,9 @@
 
 class ReleaseButton : public Button {
 public:
-    ReleaseButton(AW101Layout *parent, tButtonCallback downCB, tButtonCallback upCB);
-    virtual void onRelease();
-
+    ReleaseButton(AW101Layout *parent);
+    virtual void onRelease() = 0;
     void computeNode() override;
-
-protected:
-    tButtonCallback m_reaseCallback;
 };
 
 

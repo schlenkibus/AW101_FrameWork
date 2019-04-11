@@ -2,7 +2,7 @@
 #include <iostream>
 #include <cmath>
 
-Synth::Synth() : m_data{this} {
+Synth::Synth() : m_data{this}, m_sequenceThread{} {
     Pa_Initialize();
     Pa_OpenDefaultStream(&m_stream,
                                0,
@@ -109,6 +109,32 @@ void Synth::setOSCIIFeedback(int feedbackPercent) {
 
 Synth::Voice *Synth::getVoice(int index) {
     return &m_data.m_voices[index];
+}
+
+void Synth::playSequence() {
+
+
+    while(m_sequenceThread.joinable()) {
+        m_sequenceThread.join();
+    }
+
+    m_sequenceThread = std::thread([this](){
+            m_data.addNoteOn(16);
+            m_data.addNoteOn(18);
+            std::this_thread::sleep_for(std::chrono::milliseconds(300));
+            m_data.removeNote(16);
+            m_data.removeNote(18);
+            m_data.addNoteOn(20);
+            m_data.addNoteOn(23);
+            std::this_thread::sleep_for(std::chrono::milliseconds(300));
+            m_data.removeNote(23);
+            m_data.removeNote(20);
+            m_data.addNoteOn(30);
+            m_data.addNoteOn(15);
+            std::this_thread::sleep_for(std::chrono::milliseconds(300));
+            m_data.removeNote(15);
+            m_data.removeNote(30);
+        });
 }
 
 Synth::Voice::Voice(int key) : m_ampEnv{std::chrono::seconds{1}}, m_filter{25} {

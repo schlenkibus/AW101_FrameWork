@@ -6,14 +6,12 @@ class AW101Layout;
 
 class Button : public Control {
 public:
-    typedef std::function<void(Button*)> tButtonCallback;
-    Button(AW101Layout* parent, tButtonCallback callback);
-
-    virtual void onClick();
+    Button(AW101Layout* parent);
+    virtual void onClick() = 0;
     void computeNode() override;
-
+    const std::string& getButtonText() const;
 protected:
-    tButtonCallback m_downCallback;
+    std::string m_buttonText;
 };
 
 
