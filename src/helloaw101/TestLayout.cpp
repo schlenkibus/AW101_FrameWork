@@ -47,14 +47,11 @@ TestLayout::TestLayout(TestModel *model) : m_model{model} {
     });
 
     m_root.addChild<PlaytestSequenceButton>(this, m_model);
-    m_audioInfo = m_root.addChild<Label>(this, "Audio Info");
     m_graph = m_root.addChild<BarGraph>(this, m_model);
 
 }
 
 void TestLayout::loop() {
-    auto str = "Average osc Diff: " + std::to_string(m_model->m_synth.getVoice(0)->m_avgI.calculateAverage());
-    m_audioInfo->setText(str);
-    std::this_thread::sleep_for(std::chrono::milliseconds(250));
+    std::this_thread::sleep_for(std::chrono::milliseconds(50));
     m_graph->redraw();
 }

@@ -50,43 +50,52 @@ public:
         }
 
         void noteOn() {
-            m_currentPhaseInNote = 0;
+            if(m_state == None) {
+                m_currentPhaseInNote = 0;
+            }
             m_state = Attack;
         }
         void noteOff() {
+            if(m_state == Sustain) {
+                m_currentPhaseInNote = m_decayInPhases;
+            }
             m_state = Decay;
-            m_currentPhaseInNote = m_decayInPhases + 1;
+
         }
 
         float getAmp(int phase) {
-            if(m_state == None)
-                return 0;
-
-            if(m_state == Sustain)
-                return 1;
-
             if(phase != lastPhase) {
                 switch(m_state) {
                     case Attack:
                         if(m_currentPhaseInNote >= m_attackInPhases)
                             m_state = Sustain;
-                        m_currentPhaseInNote++;
+                        else
+                            m_currentPhaseInNote++;
                         break;
                     case Decay:
                         if(m_currentPhaseInNote <= 0)
                             m_state = None;
-                        m_currentPhaseInNote--;
+                        else
+                            m_currentPhaseInNote--;
                         break;
+                    case None:
+                        return 0;
+                    case Sustain:
+                        return 1;
                 }
                 lastPhase = phase;
             }
 
-            if(m_state == Attack) {
-                return (float)m_currentPhaseInNote / (float)m_attackInPhases;
-            } else if(m_state == Decay) {
-                return (float)m_currentPhaseInNote / (float)m_decayInPhases;
+            switch(m_state) {
+                case Attack:
+                    return std::min((float)m_currentPhaseInNote / (float)m_attackInPhases, 1.0f);
+                case Decay:
+                    return std::min((float)m_currentPhaseInNote / (float)m_decayInPhases, 1.0f);
+                case Sustain:
+                    return 1;
+                case None:
+                    return 0;
             }
-            return 0;
         }
     protected:
         State m_state;
