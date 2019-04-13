@@ -12,10 +12,11 @@ public:
 
     template<class T, typename ... tArgs>
     T* addChild(tArgs ... args);
-    std::vector<std::unique_ptr<Control>> & getChildren();
 
     template<class T>
     T *getControlById(const std::string &id);
+
+    std::vector<std::unique_ptr<Control>> & getChildren();
 
 protected:
     std::vector<std::unique_ptr<Control>> m_children;

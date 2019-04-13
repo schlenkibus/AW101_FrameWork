@@ -1,6 +1,7 @@
 #pragma once
 #include "../libaw101/AW101Layout.h"
 #include "TestModel.h"
+#include "../libaw101/ui/HighLevel/CollapseableContainer.h"
 
 class Label;
 class BarGraph;
@@ -11,6 +12,7 @@ public:
     void loop() override;
 protected:
     TestModel* m_model;
+    CollapseableContainer* m_parameterStorage;
     Label* m_audioInfo;
     BarGraph* m_graph;
 };

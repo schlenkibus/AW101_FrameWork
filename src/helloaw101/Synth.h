@@ -43,10 +43,10 @@ public:
             m_currentPhaseInNote = -1;
         }
         void setAttack(std::chrono::steady_clock::duration attack) {
-            m_attackInPhases = attack.count() / 44100;
+            m_attackInPhases = attack.count() / 22050;
         }
         void setDecay(std::chrono::steady_clock::duration decay)  {
-            m_decayInPhases = decay.count() / 44100;
+            m_decayInPhases = decay.count() / 22050;
         }
 
         void noteOn() {

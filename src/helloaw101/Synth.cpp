@@ -8,8 +8,8 @@ Synth::Synth() : m_data{this}, m_sequenceThread{} {
                                0,
                                2,
                                paFloat32,
-                               44100,
-                               paFramesPerBufferUnspecified,
+                               22050,
+                               500,
                                patestCallback,
                                &m_data);
     Pa_StartStream(m_stream);

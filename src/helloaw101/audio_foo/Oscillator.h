@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <array>
 
 template<class T>
 class Oscillator {
@@ -53,6 +54,8 @@ protected:
     int m_phaseInc;
     int m_phase;
     int m_offset;
+
+    std::array<int, 100> m_incTable;
 
     float m_cached;
     T m_data;
