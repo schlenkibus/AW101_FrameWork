@@ -9,8 +9,9 @@ public:
         int val;
         int min;
         int max;
+        float step = 1;
     };
-    Parameter(AW101Layout *parent, const std::string& name, SliderPack s, std::function<void(int)> valueTarget);
+    Parameter(AW101Layout *parent, const std::string& name, SliderPack s, std::function<void(float)> valueTarget);
 protected:
     Label* m_name;
     Label* m_value;

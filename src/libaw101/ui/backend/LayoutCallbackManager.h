@@ -13,7 +13,7 @@ public:
     void addSlider(Slider* slider);
     void addKeyEventTarget(KeyEventTarget* target);
     void onClickReceived(const UIID &id);
-    void onValueChanged(const UIID& id, int value);
+    void onValueChanged(const UIID &id, float value);
     void updateNode(Control *control);
 
     void onReleaseReceived(UIID uiid);

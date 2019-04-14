@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <array>
+#include <cmath>
 
 template<class T>
 class Oscillator {
@@ -11,7 +12,14 @@ public:
         m_phase = 0;
         lastPosInFrame = -1;
         m_offset = 0;
+        calcIncTable();
     }
+
+    void setFrequency(float frequency) {
+        m_frequency = frequency;
+        m_phaseInc = m_frequency * (m_data.getSize() / (float)22050.0f); //22050 / size
+    }
+
     void setInc(int phaseInc) {
         m_phaseInc = phaseInc;
     }
@@ -23,33 +31,27 @@ public:
     float get(int posInFrame) {
         if(posInFrame != lastPosInFrame) {
             lastPosInFrame = posInFrame;
-
-            float ret = 0.0;
-
-            auto toScan = m_phaseInc + m_offset;
-            auto pos = m_phase;
-            while(toScan != 0) {
-
-                if(pos >= m_data.getSize())
-                    pos = 0;
-
-                ret += m_data.get(pos);
-
-                pos++;
-                toScan--;
-            }
-            m_phase = pos;
-
-            m_cached = ret / (float)(m_phaseInc + m_offset);
+            auto pos = m_phase + m_phaseInc;
+            m_cached = m_data.get((int)pos % m_data.getSize());
+            if(pos <= m_data.getSize())
+                m_phase = pos;
+            else
+                m_phase = pos - m_data.getSize();
         }
-
         return m_cached;
     }
 
     void setOffset(int i) {
         m_offset = i;
     }
+
+    void calcIncTable() {
+
+    }
 protected:
+    float m_frequency;
+
+
     int lastPosInFrame;
     int m_phaseInc;
     int m_phase;

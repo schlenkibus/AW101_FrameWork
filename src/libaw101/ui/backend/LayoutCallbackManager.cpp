@@ -37,7 +37,7 @@ void LayoutCallbackManager::updateNode(Control *control) {
     m_clickServer.updateNode(control);
 }
 
-void LayoutCallbackManager::onValueChanged(const UIID &id, int value) {
+void LayoutCallbackManager::onValueChanged(const UIID &id, float value) {
     for(auto& s: m_sliders) {
         if(s->getID().id == id.id) {
             s->onValueChanged(value);

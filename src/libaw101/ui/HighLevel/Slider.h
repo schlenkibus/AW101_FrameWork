@@ -12,7 +12,7 @@ public:
         m_max = max;
     }
 
-    void onValueChanged(int value) {
+    void onValueChanged(float value) {
         m_value = value;
         m_changedCB(this);
     }
@@ -25,17 +25,23 @@ public:
         m_node.SetAttribute("min", std::to_string(m_min));
         m_node.SetAttribute("oninput", "valuechange(this.id, this.value);");
         m_node.SetAttribute("value", std::to_string(m_value));
+        m_node.SetAttribute("step", std::to_string(m_step));
     }
 
-    int getValue() {
+    void setStepSize(float stepSize) {
+        m_step = stepSize;
+    }
+
+    float getValue() {
         return m_value;
     }
 
 protected:
     tValueChangedCallback m_changedCB;
-    int m_value;
+    float m_value;
     int m_min;
     int m_max;
+    float m_step;
 };
 
 

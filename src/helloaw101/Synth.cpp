@@ -29,9 +29,9 @@ float Synth::doDsp(int posInFrame) {
     return sum / m_data.m_voices.size();
 }
 
-void Synth::setIncI(int inc) {
+void Synth::setFrequencyI(float frequency) {
     for(auto& v: m_data.m_voices) {
-        v.m_oscI.setInc(inc);
+        v.m_oscI.setFrequency(frequency);
     }
 }
 
@@ -41,9 +41,9 @@ void Synth::setOffsetI(int offset) {
     }
 }
 
-void Synth::setIncII(int inc) {
+void Synth::setFrequencyII(float frequency) {
     for(auto& v: m_data.m_voices) {
-        v.m_oscII.setInc(inc);
+        v.m_oscII.setFrequency(frequency);
     }
 }
 
@@ -56,6 +56,7 @@ void Synth::setOffsetII(int offset) {
 void Synth::setCutoffFrequency(float cutoff) {
     for(auto& v: m_data.m_voices) {
         v.m_filter.setCutoffFrequency(cutoff);
+        v.m_filter2.setCutoffFrequency(cutoff);
     }
 }
 
@@ -137,7 +138,14 @@ void Synth::playSequence() {
         });
 }
 
-Synth::Voice::Voice(int key) : m_ampEnv{std::chrono::seconds{1}}, m_filter{25} {
+void Synth::setResonance(float resonance) {
+    for(auto& v: m_data.m_voices) {
+        v.m_filter.setResonancePercent(resonance);
+        v.m_filter2.setResonancePercent(resonance);
+    }
+}
+
+Synth::Voice::Voice(int key) : m_ampEnv{std::chrono::seconds{1}}, m_filter{25, 0}, m_filter2{25, 0} {
     m_key = key;
     m_lfoIFactor = 0.0f;
     m_lfoIIFactor = 0.0f;
@@ -146,18 +154,15 @@ Synth::Voice::Voice(int key) : m_ampEnv{std::chrono::seconds{1}}, m_filter{25} {
 auto lastgate = false;
 
 float Synth::Voice::doDsp(int posInFrame) {
-    //if(lastgate != m_gate && lastgate == true)
-    //    m_oscI.resetPhase();
-    //lastgate = m_gate;
-
     auto fbI = m_feedback.m_oscIFactor * m_feedback.m_oscI;
     auto I = m_oscI.get(posInFrame) + fbI;
     m_feedback.m_oscI = I;
     auto fbII = m_feedback.m_oscIIFactor * m_feedback.m_oscII;
     auto II = m_oscII.get(posInFrame) + fbII;
     m_feedback.m_oscII = II;
+    I = m_filter.filter(I, posInFrame);
+    II = m_filter2.filter(II, posInFrame);
     auto combined = (I + II) * 0.5;
-    //auto filtered = m_filter.filter(combined, posInFrame);
     return m_ampEnv.getAmp(posInFrame) * combined;
 }
 
@@ -168,6 +173,6 @@ void Synth::Voice::noteOn() {
 }
 
 void Synth::Voice::noteOff() {
-    m_ampEnv.noteOff();
+    //m_ampEnv.noteOff();
     m_gate = false;
 }

@@ -67,8 +67,10 @@ public:
             if(phase != lastPhase) {
                 switch(m_state) {
                     case Attack:
-                        if(m_currentPhaseInNote >= m_attackInPhases)
-                            m_state = Sustain;
+                        if(m_currentPhaseInNote >= m_attackInPhases) {
+                            m_state = Decay;
+                            m_currentPhaseInNote = m_decayInPhases;
+                        }
                         else
                             m_currentPhaseInNote++;
                         break;
@@ -116,6 +118,7 @@ public:
         Average<2000, float> m_avgI;
         Envelope m_ampEnv;
         LowPassFilter m_filter;
+        LowPassFilter m_filter2;
         int m_key;
         bool m_gate;
         float m_lfoIFactor;
@@ -198,9 +201,9 @@ public:
     float doDsp(int posInFrame);
     paTestData m_data;
 
-    void setIncI(int inc);
+    void setFrequencyI(float frequency);
     void setOffsetI(int offset);
-    void setIncII(int inc);
+    void setFrequencyII(float frequency);
     void setOffsetII(int offset);
     void setCutoffFrequency(float cutoff);
     void setLFOIncI(int inc);
@@ -214,6 +217,8 @@ public:
     Voice* getVoice(int index);
 
     void playSequence();
+
+    void setResonance(float resonance);
 
 protected:
     std::thread m_sequenceThread;
