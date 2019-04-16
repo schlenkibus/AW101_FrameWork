@@ -17,6 +17,7 @@ TestLayout::TestLayout(TestModel *model) : m_model{model} {
     m_parameterStorage->addChild<Parameter>(this, "OSC I Tune (st)", Parameter::SliderPack{31, 1, 1000, 0.1}, [this](float value) {
         m_model->m_synth.setFrequencyI(value);
     });
+
     m_parameterStorage->addChild<Parameter>(this, "OSC II Tune (st)", Parameter::SliderPack{12, 1, 1000, 0.1}, [this](float value) {
         m_model->m_synth.setFrequencyII(value);
     });
@@ -26,7 +27,7 @@ TestLayout::TestLayout(TestModel *model) : m_model{model} {
     m_parameterStorage->addChild<Parameter>(this, "Envelope Release Time (ms)", Parameter::SliderPack{187, 0, 5000}, [this](int value) {
         m_model->m_synth.setRelease(value);
     });
-    m_parameterStorage->addChild<Parameter>(this, "Cutoff (?)", Parameter::SliderPack{2500, 0, 5000}, [this](int value) {
+    m_parameterStorage->addChild<Parameter>(this, "Cutoff (?)", Parameter::SliderPack{25, 0, 1000, 0.001}, [this](float value) {
         m_model->m_synth.setCutoffFrequency(value);
     });
     m_parameterStorage->addChild<Parameter>(this, "Resonance (%)", Parameter::SliderPack{25, 0, 100}, [this](int value) {

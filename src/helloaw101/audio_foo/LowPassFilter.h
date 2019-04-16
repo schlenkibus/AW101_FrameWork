@@ -1,9 +1,8 @@
 #pragma once
 
-
 class LowPassFilter {
 public:
-    LowPassFilter(int cutoff, float resonance);
+    LowPassFilter(float cutoff, float resonance);
     void setCutoffFrequency(float freq);
     void setResonancePercent(float resonance);
     float filter(float in, int framePos);

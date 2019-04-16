@@ -145,7 +145,7 @@ void Synth::setResonance(float resonance) {
     }
 }
 
-Synth::Voice::Voice(int key) : m_ampEnv{std::chrono::seconds{1}}, m_filter{25, 0}, m_filter2{25, 0} {
+Synth::Voice::Voice(int key) : m_ampEnv{std::chrono::seconds{1}}, m_filter{0.5, 0}, m_filter2{0.5, 0} {
     m_key = key;
     m_lfoIFactor = 0.0f;
     m_lfoIIFactor = 0.0f;

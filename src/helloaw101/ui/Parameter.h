@@ -6,9 +6,9 @@
 class Parameter : public Container {
 public:
     struct SliderPack {
-        int val;
-        int min;
-        int max;
+        float val;
+        float min;
+        float max;
         float step = 1;
     };
     Parameter(AW101Layout *parent, const std::string& name, SliderPack s, std::function<void(float)> valueTarget);
