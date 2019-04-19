@@ -7,7 +7,7 @@
 #include <thread>
 #include "portaudio.h"
 #include "audio_foo/Oscillator.h"
-#include "audio_foo/LowPassFilter.h"
+#include "audio_foo/Filter.h"
 #include "foo/Average.h"
 #include "foo/RingBuffer.h"
 
@@ -117,8 +117,8 @@ public:
         Oscillator<SineWaveTable<131072>> m_lfoII;
         Average<2000, float> m_avgI;
         Envelope m_ampEnv;
-        LowPassFilter m_filter;
-        LowPassFilter m_filter2;
+        Filter m_filter;
+        Filter m_filter2;
         int m_key;
         bool m_gate;
         float m_lfoIFactor;
@@ -219,6 +219,12 @@ public:
     void playSequence();
 
     void setResonance(float resonance);
+
+    void setQ(float i);
+
+    void setDBGain(float db);
+
+    void setPhaseOffsetI(float phaseOffset);
 
 protected:
     std::thread m_sequenceThread;

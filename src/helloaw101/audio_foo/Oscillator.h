@@ -12,6 +12,7 @@ public:
         m_phase = 0;
         lastPosInFrame = -1;
         m_offset = 0;
+        m_phaseOffset = 0;
         calcIncTable();
     }
 
@@ -31,7 +32,7 @@ public:
     float get(int posInFrame) {
         if(posInFrame != lastPosInFrame) {
             lastPosInFrame = posInFrame;
-            auto pos = m_phase + m_phaseInc;
+            auto pos = m_phase + m_phaseInc + m_phaseOffset;
             m_cached = m_data.get((int)pos % m_data.getSize());
             if(pos <= m_data.getSize())
                 m_phase = pos;
@@ -48,9 +49,14 @@ public:
     void calcIncTable() {
 
     }
+
+    void setPhaseOffset(float d) {
+        m_phaseOffset = d;
+    }
+
 protected:
     float m_frequency;
-
+    float m_phaseOffset;
 
     int lastPosInFrame;
     int m_phaseInc;

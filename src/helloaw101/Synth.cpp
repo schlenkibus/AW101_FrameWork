@@ -55,8 +55,8 @@ void Synth::setOffsetII(int offset) {
 
 void Synth::setCutoffFrequency(float cutoff) {
     for(auto& v: m_data.m_voices) {
-        v.m_filter.setCutoffFrequency(cutoff);
-        v.m_filter2.setCutoffFrequency(cutoff);
+        v.m_filter.setFrequency(cutoff);
+        v.m_filter2.setFrequency(cutoff);
     }
 }
 
@@ -140,12 +140,33 @@ void Synth::playSequence() {
 
 void Synth::setResonance(float resonance) {
     for(auto& v: m_data.m_voices) {
-        v.m_filter.setResonancePercent(resonance);
-        v.m_filter2.setResonancePercent(resonance);
+
     }
 }
 
-Synth::Voice::Voice(int key) : m_ampEnv{std::chrono::seconds{1}}, m_filter{0.5, 0}, m_filter2{0.5, 0} {
+void Synth::setQ(float i) {
+    for(auto& v: m_data.m_voices) {
+        v.m_filter.setQ(i);
+        v.m_filter2.setQ(i);
+    }
+
+}
+
+void Synth::setDBGain(float dbGain) {
+    for(auto& v: m_data.m_voices) {
+        v.m_filter.setdbGain(dbGain);
+        v.m_filter2.setdbGain(dbGain);
+    }
+}
+
+void Synth::setPhaseOffsetI(float phaseOffset) {
+    for(auto& v: m_data.m_voices) {
+        v.m_oscI.setPhaseOffset(phaseOffset);
+    }
+
+}
+
+Synth::Voice::Voice(int key) : m_ampEnv{std::chrono::seconds{1}}, m_filter{Filter::FilterType::BANDPASS, 1000.0,5.0,1.0}, m_filter2{Filter::FilterType::BANDPASS, 1000.0,5.0,1.0} {
     m_key = key;
     m_lfoIFactor = 0.0f;
     m_lfoIIFactor = 0.0f;
