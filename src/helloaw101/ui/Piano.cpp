@@ -10,6 +10,9 @@ Piano::Piano(TestLayout *tl, TestModel *model)
 {
     m_parent->getCallbackManager()->addKeyEventTarget(this);
     addChild<Label>(tl, "Hello Piano<br> Controls:<br> keys 0 - 9 start a voice with respective semitone");
+    for(auto& v: m_voicePtrs) {
+      v = nullptr;
+    }
 }
 
 void Piano::computeNode() {
@@ -18,19 +21,20 @@ void Piano::computeNode() {
 }
 
 void Piano::onDown(int key) {
-    if(!m_model->m_synth.m_data.hasNoteForKey(key)) {
-        m_voicePtrs[m_nextVoiceIndex] = m_model->m_synth.m_data.addNoteOn(key);
-        if(m_nextVoiceIndex >= m_voicePtrs.size())
-            m_nextVoiceIndex = 0;
-    }
+  for(auto& v: m_model->m_synth.m_data.m_voices) {
+    if(v.m_key == key && v.m_gate)
+      return;
+  }
+  m_model->m_synth.m_data.addNoteOn(key);
 }
 
 void Piano::onRelease(int key) {
-    m_model->m_synth.m_data.removeNote(key);
+  m_model->m_synth.m_data.removeNote(key);
 }
 
 void Piano::onKeyDown(const std::string &key) {
     try {
+        std::cout << "Got Key: " << key << std::endl;
         onDown(std::stoi(key));
     } catch(...) {
     }

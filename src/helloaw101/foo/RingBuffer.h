@@ -10,6 +10,12 @@ public:
     RingBuffer() = default;
 
     T put(T t) {
+
+        if(std::isnan(t)) {
+          std::cerr << "NAN Detected!!" << std::endl;
+          return {};
+        }
+
         m_data[m_head] = t;
         m_head++;
         if(m_head >= count)

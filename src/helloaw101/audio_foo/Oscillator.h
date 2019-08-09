@@ -11,18 +11,18 @@ public:
         m_phaseInc = 1;
         m_phase = 0;
         lastPosInFrame = -1;
-        m_offset = 0;
         m_phaseOffset = 0;
         calcIncTable();
     }
 
-    void setFrequency(float frequency) {
-        m_frequency = frequency;
-        m_phaseInc = m_frequency * (m_data.getSize() / (float)22050.0f); //22050 / size
+    void setFrequencyOffset(float frequency) {
+      m_frequencyOffset = frequency;
+      setFrequency(m_frequency);
     }
 
-    void setInc(int phaseInc) {
-        m_phaseInc = phaseInc;
+    void setFrequency(float frequency) {
+        m_frequency = frequency;
+        m_phaseInc = m_frequency + m_frequencyOffset * (m_data.getSize() / (float)48000.0f);
     }
 
     void resetPhase() {
@@ -42,9 +42,6 @@ public:
         return m_cached;
     }
 
-    void setOffset(int i) {
-        m_offset = i;
-    }
 
     void calcIncTable() {
 
@@ -56,12 +53,12 @@ public:
 
 protected:
     float m_frequency;
+    float m_frequencyOffset;
     float m_phaseOffset;
 
     int lastPosInFrame;
-    int m_phaseInc;
-    int m_phase;
-    int m_offset;
+    float m_phaseInc;
+    float m_phase;
 
     std::array<int, 100> m_incTable;
 

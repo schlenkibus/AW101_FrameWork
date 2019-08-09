@@ -6,5 +6,4 @@ PlaytestSequenceButton::PlaytestSequenceButton(AW101Layout *parent, TestModel *m
 }
 
 void PlaytestSequenceButton::onClick() {
-    m_model->m_synth.playSequence();
 }

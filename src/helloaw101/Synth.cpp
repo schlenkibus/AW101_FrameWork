@@ -8,7 +8,7 @@ Synth::Synth() : m_data{this}, m_sequenceThread{} {
                                0,
                                2,
                                paFloat32,
-                               22050,
+                               48000,
                                500,
                                patestCallback,
                                &m_data);
@@ -35,165 +35,68 @@ void Synth::setFrequencyI(float frequency) {
     }
 }
 
-void Synth::setOffsetI(int offset) {
+void Synth::setOffsetI(float offset) {
     for(auto& v: m_data.m_voices) {
-        v.m_oscI.setOffset(offset);
+        v.m_oscI.setFrequencyOffset(offset);
     }
 }
 
-void Synth::setFrequencyII(float frequency) {
-    for(auto& v: m_data.m_voices) {
-        v.m_oscII.setFrequency(frequency);
-    }
+void Synth::setShaperFold(float fold) {
+  for(auto& v: m_data.m_voices) {
+    v.m_shaper.setFold(fold);
+  }
 }
 
-void Synth::setOffsetII(int offset) {
-    for(auto& v: m_data.m_voices) {
-        v.m_oscII.setOffset(offset);
-    }
+void Synth::setShaperMix(float mix) {
+  for(auto& v: m_data.m_voices) {
+    v.m_shaper.setWet(mix);
+  }
 }
 
-void Synth::setCutoffFrequency(float cutoff) {
-    for(auto& v: m_data.m_voices) {
-        v.m_filter.setFrequency(cutoff);
-        v.m_filter2.setFrequency(cutoff);
-    }
+Synth::Voice::Voice(int key) {
 }
-
-void Synth::setLFOIncI(int inc) {
-    for(auto& v: m_data.m_voices) {
-        v.m_lfoI.setInc(inc);
-    }
-}
-
-void Synth::setLFOIncII(int inc) {
-    for(auto& v: m_data.m_voices) {
-        v.m_lfoII.setInc(inc);
-    }
-}
-
-void Synth::setAttack(int attackms) {
-    for(auto& v: m_data.m_voices) {
-        v.m_ampEnv.setAttack(std::chrono::milliseconds{attackms});
-    }
-}
-
-void Synth::setRelease(int releasems) {
-    for(auto&v:m_data.m_voices) {
-        v.m_ampEnv.setDecay(std::chrono::milliseconds{releasems});
-    }
-}
-
-void Synth::setLFOIFactor(int factor) {
-    for(auto&v:m_data.m_voices) {
-        v.m_lfoIFactor = factor / 100.f;
-    }
-}
-
-void Synth::setLFOIIFactor(int i) {
-    for(auto&v:m_data.m_voices) {
-        v.m_lfoIIFactor = i / 100.f;
-    }
-}
-
-void Synth::setOSCIFeedback(int feedbackPercent) {
-    for(auto&v:m_data.m_voices) {
-        v.m_feedback.m_oscIFactor = feedbackPercent / 100.f;
-    }
-}
-
-void Synth::setOSCIIFeedback(int feedbackPercent) {
-    for(auto&v:m_data.m_voices) {
-        v.m_feedback.m_oscIIFactor = feedbackPercent / 100.f;
-    }
-}
-
-Synth::Voice *Synth::getVoice(int index) {
-    return &m_data.m_voices[index];
-}
-
-void Synth::playSequence() {
-
-
-    while(m_sequenceThread.joinable()) {
-        m_sequenceThread.join();
-    }
-
-    m_sequenceThread = std::thread([this](){
-            m_data.addNoteOn(16);
-            m_data.addNoteOn(18);
-            std::this_thread::sleep_for(std::chrono::milliseconds(300));
-            m_data.removeNote(16);
-            m_data.removeNote(18);
-            m_data.addNoteOn(20);
-            m_data.addNoteOn(23);
-            std::this_thread::sleep_for(std::chrono::milliseconds(300));
-            m_data.removeNote(23);
-            m_data.removeNote(20);
-            m_data.addNoteOn(30);
-            m_data.addNoteOn(15);
-            std::this_thread::sleep_for(std::chrono::milliseconds(300));
-            m_data.removeNote(15);
-            m_data.removeNote(30);
-        });
-}
-
-void Synth::setResonance(float resonance) {
-    for(auto& v: m_data.m_voices) {
-
-    }
-}
-
-void Synth::setQ(float i) {
-    for(auto& v: m_data.m_voices) {
-        v.m_filter.setQ(i);
-        v.m_filter2.setQ(i);
-    }
-
-}
-
-void Synth::setDBGain(float dbGain) {
-    for(auto& v: m_data.m_voices) {
-        v.m_filter.setdbGain(dbGain);
-        v.m_filter2.setdbGain(dbGain);
-    }
-}
-
-void Synth::setPhaseOffsetI(float phaseOffset) {
-    for(auto& v: m_data.m_voices) {
-        v.m_oscI.setPhaseOffset(phaseOffset);
-    }
-
-}
-
-Synth::Voice::Voice(int key) : m_ampEnv{std::chrono::seconds{1}}, m_filter{Filter::FilterType::BANDPASS, 1000.0,5.0,1.0}, m_filter2{Filter::FilterType::BANDPASS, 1000.0,5.0,1.0} {
-    m_key = key;
-    m_lfoIFactor = 0.0f;
-    m_lfoIIFactor = 0.0f;
-}
-
-auto lastgate = false;
 
 float Synth::Voice::doDsp(int posInFrame) {
-    auto fbI = m_feedback.m_oscIFactor * m_feedback.m_oscI;
-    auto I = m_oscI.get(posInFrame) + fbI;
-    m_feedback.m_oscI = I;
-    auto fbII = m_feedback.m_oscIIFactor * m_feedback.m_oscII;
-    auto II = m_oscII.get(posInFrame) + fbII;
-    m_feedback.m_oscII = II;
-    I = m_filter.filter(I, posInFrame);
-    II = m_filter2.filter(II, posInFrame);
-    auto combined = (I + II) * 0.5;
-    return m_ampEnv.getAmp(posInFrame) * combined;
+    if(!m_gate)
+      return 0.0;
+
+    auto osc = m_oscI.get(posInFrame);
+    auto shaped = m_shaper.shape(osc);
+    return shaped;
 }
 
-void Synth::Voice::noteOn() {
+void Synth::Voice::noteOn(int key) {
     m_gate = true;
-    m_ampEnv.noteOn();
+    m_key = key;
+    m_oscI.setPhaseOffset(keyToFrequency(key));
     m_oscI.resetPhase();
 }
 
 void Synth::Voice::noteOff() {
-    //m_ampEnv.noteOff();
     m_gate = false;
+}
+float Synth::Voice::keyToFrequency(int key) {
+  switch(key) {
+  case 0:
+    return 261.6;
+  case 1:
+    return 293.66;
+  case 2:
+    return 329.63;
+  case 3:
+    return 349.23;
+  case 4:
+    return 392;
+  case 5:
+    return 440;
+  case 6:
+    return 493.88;
+  case 7:
+    return 554.37;
+  case 8:
+    return 622.25;
+  case 9:
+    return 739.99;
+  }
+  return 0;
 }

@@ -13,7 +13,6 @@ public:
 protected:
     TestModel* m_model;
     CollapseableContainer* m_parameterStorage;
-    Label* m_audioInfo;
     BarGraph* m_graph;
 };
 
