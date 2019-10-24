@@ -11,12 +11,13 @@ public:
         float max;
         float step = 1;
     };
+
     Parameter(AW101Layout *parent, const std::string& name, SliderPack s, std::function<void(float)> valueTarget);
 protected:
     Label* m_name;
     Label* m_value;
     Slider* m_slider;
-    std::function<void(int)> m_onValueChange;
+    std::function<void(float)> m_onValueChange;
 };
 
 
